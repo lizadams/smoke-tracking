@@ -21,8 +21,6 @@
 
 set log_analyzer = `python /cmas/smoke/smoke_tracking/log_analyzer/log_analyzer.py -k /cmas/smoke/smoke_tracking/log_analyzer/known_messages.txt -l 2 -f ~/tmp/test_log4.csv $LOGS/*pt.*log`
 
-set temp_area_file = "./tmp/tmp.area.$$"
-
 set done = 0
 set prefix_byte_count = 0
 
@@ -41,6 +39,10 @@ while ( $done == 0 )
   endif
 
   if ( "$input[1]" == 'status' ) then
+    #  create a temporary directory to store files containing grep output
+       mkdir -p ./tmp
+       set temp_area_file = "./tmp/tmp.area.$$"
+
     set array = (Success Failure)
     if ( "$input[2]" == 'area' ) then
     foreach program ( smkinven spcmat grdmat temporal smkmerge smk2emis)
