@@ -153,6 +153,7 @@ while ( $done == 0 )
            else
                echo "========================================"
                if ($program == smkinven) then
+                 echo "ERROR - smkmerge was run before $program. You need to RERUN smkmerge"
                else if ($program == spcmat) then
                  echo "ERROR - smkmerge was run before $program. You need to RERUN smkmerge"
                else if ($program == grdmat) then
@@ -282,6 +283,7 @@ while ( $done == 0 )
            else
                echo "========================================"
                if ($program == smkinven) then
+                 echo "ERROR - smkmerge was run before $program. You need to RERUN smkmerge"
                else if ($program == spcmat) then
                  echo "ERROR - smkmerge was run before $program. You need to RERUN smkmerge"
                else if ($program == grdmat) then
