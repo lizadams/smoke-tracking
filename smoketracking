@@ -1,0 +1,433 @@
+#!/bin/csh -f
+#******************************************************************************
+# PURPOSE: smoketracking - get the SMOKE run home directory
+#          list directory contents, script settings and
+#          input and output filenames for diagnostics or to replicate SMOKE run
+#
+# NOTE:   Requires program log_analyzer
+# NOTE:   First set the SMK_HOME env variable to the base SMOKE installation
+# NOTE:   Then source the assigns file for the SMOKE runs
+#
+# USAGE: ./smoketracking
+#
+# HISTORY: 2014-06-25 lizadams@email.unc.edu, Created.
+# STATUS: unreviewed, tested.
+#******************************************************************************
+
+   if ( ! $?SMK_HOME ) then
+     echo 'please set 'SMK_HOME' environment variable and source assigns file'
+     exit
+   endif
+
+set log_analyzer = `python /cmas/smoke/smoke_tracking/log_analyzer/log_analyzer.py -k /cmas/smoke/smoke_tracking/log_analyzer/known_messages.txt -l 2 -f ~/tmp/test_log4.csv $LOGS/*pt.*log`
+
+set temp_area_file = "./tmp/tmp.area.$$"
+
+set done = 0
+set prefix_byte_count = 0
+
+while ( $done == 0 )
+
+  if ( $#argv == 0 ) then
+    set input = ( ' ' )
+    set done = 1;
+  else if ( "$1" == 'loop' ) then
+    set input = "$<"
+    set input = ( $input )
+    set prefix_byte_count = 1; # Prefix all output with a byte count.
+  else
+    set input = ( $argv )
+    set done = 1;
+  endif
+
+  if ( "$input[1]" == 'status' ) then
+    set array = (Success Failure)
+    if ( "$input[2]" == 'area' ) then
+    foreach program ( smkinven spcmat grdmat temporal smkmerge smk2emis)
+         set area_file = "./tmp/${program}.area.$$"
+         /bin/grep 'Normal Completion' $LOGS/${program}.ar.*.log >> $area_file
+         echo "========================================="
+         set id = `/bin/grep -c 'Normal Completion' $area_file`
+         if ( $id >= 1 ) then
+           echo "$program $array[1] `/bin/grep -c 'Normal Completion' $area_file` times"
+         else if ($id == 0) then
+        /bin/grep -B 4 -A 2 'ERROR ABORT in subroutine' $LOGS/${program}.ar.*.log
+         echo "========================================="
+           echo "${program} logfile unsuccessful: check and rerun program"
+           echo "location of log file:"
+           ls -lrt $LOGS/${program}.ar.*.log
+           echo "----------------------------------"
+           echo $log_analyzer
+                echo "more information is available from log_analyzer under ~/tmp/test.log4"
+           break
+
+         endif
+         echo "========================================="
+     end
+         echo "Log File Names and Date Stamps"
+       ls -lrt $LOGS/*.ar*.log
+       set mergelogdate = `stat -c%Y $LOGS/smkmerge*ar*.log`
+       set invlogdate   = `stat -c%Y $LOGS/smkinven*ar*.log`
+       set spcmatcmaqdate   = `stat -c%Y $LOGS/spcmat*ar*cmaq*.log`
+       set spcmatcamxdate = `stat -c%Y $LOGS/spcmat*ar*camx*.log`
+       set grdmatdate   = `stat -c%Y $LOGS/grdmat*ar*.log`
+       set temporaldate = `stat -c%Y $LOGS/temporal*ar*.log`
+       set smk2emisdate = `stat -c%Y $LOGS/smk2emis*ar*.log`
+
+       set filedate = $invlogdate
+                  echo "============================="
+                   echo "checking if smkinven was run prior to other programs"
+                  echo "=============================="
+        foreach program ( smkinven spcmat grdmat temporal smk2emis smkmerge )
+           if ($program == smkinven) then
+              set logdate = $invlogdate
+           else if ($program == spcmat) then
+              set logdate = $spcmatcmaqdate
+           else if ($program == grdmat) then
+              set logdate = $grdmatdate
+           else if ($program == temporal) then
+              set logdate = $temporaldate
+           else if ($program == smkmerge) then
+              set logdate = $mergelogdate
+           else if ($program == smk2emis) then
+              set logdate = $smk2emisdate
+           endif
+           if ($logdate >= $invlogdate) then
+                    if ($program == smkinven) then
+                    else if ($program == spcmat) then
+                       echo "$program was run after smkinven"
+                    else if ($program == grdmat) then
+                       echo "$program was run after smkinven"
+                    else if ($program == temporal) then
+                       echo "$program was run after smkinven"
+                    else if ($program == smkmerge) then
+                       echo "$program was run after smkinven"
+                  endif
+           else
+               if ($program == smkinven) then
+               else if ($program == spcmat) then
+                 echo "The logfile for smkinven is NEWER than $program. You may need to rerun all of the programs after smkinven"
+               else if ($program == grdmat) then
+                 echo "The logfile for spcmat is NEWER than $program. You *may* need to rerun grdmat, if an ERROR was reported above"
+               else if ($program == temporal) then
+                 echo "The logfile for grdmat is NEWER than $program. You may need to rerun temporal, if an ERROR was reported above"
+               else if ($program == smkmerge) then
+                 echo "The logfile for temporal is NEWER than $program. You may need to rerun smkmerge"
+               else if ($program == smk2emis) then
+                 echo "The logfile for temporal is NEWER than $program. You may need to rerun smk2emis"
+               endif
+           endif
+              set filedate = $logdate
+         end
+
+                 echo "============================="
+                   echo "checking if smkmerge was run after all other programs"
+                  echo "=============================="
+       foreach program ( smkinven spcmat grdmat temporal smk2emis smkmerge )
+         if ($program == smkinven) then
+              set logdate = $invlogdate
+           else if ($program == spcmat) then
+              set logdate = $spcmatcmaqdate
+           else if ($program == grdmat) then
+              set logdate = $grdmatdate
+           else if ($program == temporal) then
+              set logdate = $temporaldate
+           else if ($program == smkmerge) then
+              set logdate = $mergelogdate
+           else if ($program == smk2emis) then
+              set logdate = $smk2emisdate
+           endif
+           if ($logdate <= $mergelogdate) then
+                    if ($program == smkmerge) then
+                    else if ($program == spcmat) then
+                       echo "smkmerge was run after $program"
+                    else if ($program == grdmat) then
+                       echo "smkmerge was run after $program"
+                    else if ($program == temporal) then
+                       echo "smkmerge was run after $program"
+                    else if ($program == smk2emis) then
+                       echo "smkmerge was run after $program"
+                  endif
+           else
+               echo "========================================"
+               if ($program == smkinven) then
+               else if ($program == spcmat) then
+                 echo "ERROR - smkmerge was run before $program. You need to RERUN smkmerge"
+               else if ($program == grdmat) then
+                 echo "ERROR - smkmerge was run before $program. You need to RERUN smkmerge"
+               else if ($program == temporal) then
+                 echo "ERROR - smkmerge was run before $program. You need to RERUN smkmerge"
+               else if ($program == smkmerge) then
+                 echo "ERROR - smkmerge was run before $program. You need to RERUN smkmerge"
+               endif
+               echo "========================================"
+           endif
+       end
+       set maxtmp = 0
+       foreach logdate ( $mergelogdate $invlogdate $spcmatcmaqdate $grdmatdate $temporaldate )
+           if ($logdate >= $maxtmp) then
+       ##        echo "date $logdate is older recent than previous program"
+               set maxtmp = $logdate
+           else
+        ##       echo "date $logdate is more recent than the next program, may need to rerun"
+           endif
+       end
+          if ( $maxtmp == $mergelogdate ) then
+              echo "$array[1] in the order of runs: Smkmerge was correctly run after all processes"
+          else if ( $maxtmp == $smk2emisdate ) then
+              echo "$array[1] in the order of runs: Smkmerge was correctly run after all processes except smk2emis"
+          else if ( $maxtmp != $smk2emisdate ) then
+               echo "SMKMERGE may need to be rerun, it's log file must be run after all other processes except smk2emis"
+          endif
+
+              echo 'note: spcmat, grdmat and temporal can be run independently, as long as they are run after smkinven and prior to smkmerge'
+          rm ./tmp/*.area.*
+    else if ( "$input[2]" == 'point' ) then
+    foreach program ( smkinven spcmat grdmat temporal smkmerge )
+         set point_file = "./tmp/${program}.point.$$"
+         /bin/grep 'Normal Completion' $LOGS/${program}.pt.*.log >> $point_file
+         set id = `/bin/grep -c 'Normal Completion' $point_file`
+         if ( $id >= 1 ) then
+           echo "$program $array[1] `/bin/grep -c 'Normal Completion' $point_file` times"
+         else if ($id == 0) then
+           /bin/grep -B 4 -A 2 'ERROR ABORT in subroutine' $LOGS/${program}.pt.*.log
+         echo "========================================="
+           echo "${program} logfile unsuccessful: check and rerun program"
+           echo "location of log file:"
+           ls -lrt $LOGS/${program}.pt.*.log
+           echo "----------------------------------"
+           echo $log_analyzer
+                echo "more information is available from log_analyzer under ~/tmp/test.log4"
+           break
+         endif
+
+         echo "========================================="
+    end
+         echo "Log File Names and Date Stamps"
+       ls -l $LOGS/*.pt*.log
+       set mergelogdate = `stat -c%Y $LOGS/smkmerge*pt*.log`
+       set invlogdate   = `stat -c%Y $LOGS/smkinven*pt*.log`
+       set spcmatdate   = `stat -c%Y $LOGS/spcmat*pt*.log`
+       set grdmatdate   = `stat -c%Y $LOGS/grdmat*pt*.log`
+       set temporaldate = `stat -c%Y $LOGS/temporal*pt*.log`
+       set filedate = $invlogdate
+                 echo "============================="
+                   echo "checking if smkinven was run prior to other programs"
+                  echo "=============================="
+       foreach program ( smkinven spcmat grdmat temporal smkmerge )
+           if ($program == smkinven) then
+              set logdate = $invlogdate 
+           else if ($program == spcmat) then
+              set logdate = $spcmatdate
+           else if ($program == grdmat) then
+              set logdate = $grdmatdate
+           else if ($program == temporal) then
+              set logdate = $temporaldate
+           else if ($program == smkmerge) then
+              set logdate = $mergelogdate
+           endif
+           if ($logdate >= $invlogdate) then
+              set filedate = $logdate
+               if ($program == spcmat) then
+                   echo "$program was run after smkinven"
+               else if ($program == grdmat) then
+                   echo "$program was run after smkinven"
+               else if ($program == temporal) then
+                   echo "$program was run after smkinven"
+               else if ($program == smkmerge) then
+                   echo "$program was run after smkinven"
+               endif
+           else
+               if ($program == smkinven) then
+               else if ($program == spcmat) then
+                 echo "The logfile for smkinven is NEWER than $program. You need to rerun programs after smkinven"
+               else if ($program == grdmat) then
+                 echo "The logfile for smkinven is NEWER than $program. You need to rerun grdmat"
+               else if ($program == temporal) then 
+                 echo "The logfile for smkinven is NEWER than $program. You need to rerun temporal"
+               else if ($program == smkmerge) then
+                 echo "The logfile for smkinven is NEWER than $program. You need to rerun smkmerge"
+               else if ($program == smk2emis) then
+                 echo "The logfile for smkinven is NEWER than $program. You need to rerun smk2emis"
+               endif
+           endif
+       end
+
+                echo "============================="
+                   echo "checking if smkmerge was run after all other programs"
+                  echo "=============================="
+       foreach program ( smkinven spcmat grdmat temporal smkmerge )
+         if ($program == smkinven) then
+              set logdate = $invlogdate
+           else if ($program == spcmat) then
+              set logdate = $spcmatdate
+           else if ($program == grdmat) then
+              set logdate = $grdmatdate
+           else if ($program == temporal) then
+              set logdate = $temporaldate
+           else if ($program == smkmerge) then
+              set logdate = $mergelogdate
+           endif
+           if ($logdate <= $mergelogdate) then
+                    if ($program == smkmerge) then
+                    else if ($program == spcmat) then
+                       echo "smkmerge was run after $program"
+                    else if ($program == grdmat) then
+                       echo "smkmerge was run after $program"
+                    else if ($program == temporal) then
+                       echo "smkmerge was run after $program"
+                  endif
+           else
+               echo "========================================"
+               if ($program == smkinven) then
+               else if ($program == spcmat) then
+                 echo "ERROR - smkmerge was run before $program. You need to RERUN smkmerge"
+               else if ($program == grdmat) then
+                 echo "ERROR - smkmerge was run before $program. You need to RERUN smkmerge"
+               else if ($program == temporal) then
+                 echo "ERROR - smkmerge was run before $program. You need to RERUN smkmerge"
+               else if ($program == smkmerge) then
+                 echo "ERROR - smkmerge was run before $program. You need to RERUN smkmerge"
+               endif
+               echo "========================================"
+           endif
+       end
+       set maxtmp = 0
+       foreach logdate ( $mergelogdate $invlogdate $spcmatdate $grdmatdate $temporaldate )
+           if ($logdate >= $maxtmp) then
+       ##        echo "date $logdate is older recent than previous program"
+               set maxtmp = $logdate
+           else
+        ##       echo "date $logdate is more recent than the next program, may need to rerun"
+           endif
+       end
+          if ( $maxtmp == $mergelogdate ) then
+              echo "$array[1] in the order of runs: Smkmerge was correctly run after all processes"
+          else
+               echo "SMKMERGE may need to be rerun, it's log file must be run after all other processes except smk2emis"
+          endif
+
+              echo 'note: spcmat, grdmat and temporal can be run independently, as long as they are run after smkinven and prior to smkmerge'
+          rm ./tmp/*.point.*
+    else if ( "$input[2]" == 'biogenic' ) then
+    foreach program ( tmpbeis3 normbeis3 smk2emis smkmerge )
+         set biogenic_file = "./tmp/${program}.biogenic.$$"
+         /bin/grep 'Normal Completion' $LOGS/${program}.bg.*.log >> $biogenic_file
+         echo "$program $array[1] `/bin/grep -c 'Normal Completion' $biogenic_file` times"
+    end
+       ls -l $LOGS/*.bg*.log
+       set mergelogdate = `stat -c%Y $LOGS/smkmerge*bg*.log`
+       set tmpbeis3date   = `stat -c%Y $LOGS/tmpbeis3*bg*.log`
+       set normbeis3date   = `stat -c%Y $LOGS/normbeis3*bg*.log`
+       set smk2emisdate = `stat -c%Y $LOGS/smk2emis*bg*.log`
+       set maxtmp = 0
+       foreach logdate ( $mergelogdate $tmpbeis3date $normbeis3date $smk2emisdate )
+           if ($logdate >= $maxtmp) then
+               set maxtmp = $logdate
+           else
+           endif
+       end
+          if ( $maxtmp == $mergelogdate ) then
+              echo "$array[1] in the order of runs: Smkmerge was correctly run after all processes"
+          else if ( $maxtmp == $smk2emisdate ) then
+              echo "$array[1] in the order of runs: Smkmerge was correctly run after all processes except smk2emis"
+          else if ( $maxtmp != $smk2emisdate ) then
+               echo "SMKMERGE may need to be rerun, it's log file must be run after all other processes except smk2emis"
+          endif
+
+
+    else if ( "$input[2]" == 'mobile' ) then
+    foreach program ( smkinven grdmat smkmerge )
+         set mobile_file = "./tmp/${program}.mobile.$$"
+         /bin/grep 'Normal Completion' $LOGS/${program}.mb.*.log >> $mobile_file
+         echo "$program $array[1] `/bin/grep -c 'Normal Completion' $mobile_file` times"
+    end
+       ls -l $LOGS/*.mb*.log 
+       set mergelogdate = `stat -c%Y $LOGS/smkmerge*mb*.log`
+       set invlogdate   = `stat -c%Y $LOGS/smkinven*mb*.log`
+       set spcmatdate   = `stat -c%Y $LOGS/spcmat*mb*.log`
+       set grdmatdate   = `stat -c%Y $LOGS/grdmat*mb*.log`
+       set temporaldate = `stat -c%Y $LOGS/temporal*mb*.log`
+       set maxtmp = 0
+       foreach logdate ( $mergelogdate $invlogdate $spcmatdate $grdmatdate $temporaldate )
+           if ($logdate >= $maxtmp) then
+               echo "date $logdate is older recent than previous program"
+               set maxtmp = $logdate
+           else
+               echo "date $logdate is more recent than the next program, may need to rerun"
+           endif
+       end
+          if ( $maxtmp == $mergelogdate ) then
+              echo "$array[1] in the order of runs: Smkmerge was correctly run after all processes"
+          else if ( $maxtmp == $smk2emisdate ) then
+              echo "$array[1] in the order of runs: Smkmerge was correctly run after all processes except smk2emis"
+          else if ( $maxtmp != $smk2emisdate ) then
+               echo "SMKMERGE may need to be rerun, it's log file must be run after all other processes except smk2emis"
+          endif
+
+
+    endif
+
+  else if ( "$input[1]" == 'debug' ) then
+
+    if ( $prefix_byte_count == 0 ) then
+      echo '../'
+      /bin/ls -1Lp "$input[2]"
+    else
+      echo '../' > $temp_file
+      /bin/ls -1Lp "$input[2]" >> $temp_file
+      /bin/ls -l   $temp_file | /usr/bin/awk '{ print $5 }'
+      /bin/cat     $temp_file
+      /bin/rm -f   $temp_file
+    endif
+
+  else if ( "$input[1]" == 'variables' ) then
+
+    if ( $prefix_byte_count == 0 ) then
+      ${log_analyzer} "$input[2]"
+    else
+      ${log_analyzer} "$input[2]" > $temp_file
+      /bin/ls -l $temp_file | /usr/bin/awk '{ print $5 }'
+      /bin/cat   $temp_file
+      /bin/rm -f $temp_file
+    endif
+
+  else if ( "$input[1]" == 'subset' ) then
+    set variables = ''
+    @ count = $#input
+    @ index = 3
+
+    while ( $index <= $count )
+      set variables = "$variables $input[$index]"
+      @ index += 1
+    end
+
+    $ncvariable "$input[2]" $temp_file $variables
+
+    if ( $prefix_byte_count == 1 ) then # First output file byte count:
+      /bin/ls -l $temp_file | /usr/bin/awk '{ print $5 }'
+    endif
+
+    /bin/cat $temp_file
+    /bin/rm -f $temp_file
+  else if ( "$input[1]" == 'quit' ) then
+    set done = 1
+  else
+    echo
+    echo "$0 - Diagnose smoke runs and track input/output and log files."
+    echo
+    echo "Usage: $0 status sector "
+    echo
+    echo 'Examples:'
+    echo
+    echo "command syntax:"
+    echo "$0 status area"
+    echo "output:"
+    echo 'smkinven Success 1 times'
+    echo
+    echo 'Comments, questions: lizadams@email.unc.edu, 1-919-843-0518.'
+    echo
+  endif
+
+end
+
