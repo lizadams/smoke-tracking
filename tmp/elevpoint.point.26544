@@ -1,0 +1,74 @@
+     --->> Normal Completion of program ELEVPOINT
+File name and location at time elevpoint was run - NOTE: Directory Location may have been moved after run completed
+-rw-rw-r--. 1 zeadelma zeadelma 17686 Jul 21 12:09 /cmas/smoke/data/run_train_eaa/static/logs/elevpoint.pt.train_eaa.log
+     "STACK_GROUPS" opened as UNKNOWN(R-W)    
+     File name "/cmas/smoke/data/run_train_eaa/output/merge/camx.cb05p25/stack_groups.wus12.train_eaa.ncf"
+     "PNTS" opened as OLD:READ-ONLY   
+     File name "/cmas/smoke/data/inventory/train_eaa/pnts.ncf"
+--
+     "TMP_POL_FILE" opened as OLD:READ-ONLY   
+     File name "/cmas/smoke/data/inventory/train_eaa/pnts_dat/CO.ncf"
+--
+     "TMP_POL_FILE" opened as OLD:READ-ONLY   
+     File name "/cmas/smoke/data/inventory/train_eaa/pnts_dat/NOX.ncf"
+--
+     "TMP_POL_FILE" opened as OLD:READ-ONLY   
+     File name "/cmas/smoke/data/inventory/train_eaa/pnts_dat/VOC.ncf"
+--
+     "TMP_POL_FILE" opened as OLD:READ-ONLY   
+     File name "/cmas/smoke/data/inventory/train_eaa/pnts_dat/NH3.ncf"
+--
+     "TMP_POL_FILE" opened as OLD:READ-ONLY   
+     File name "/cmas/smoke/data/inventory/train_eaa/pnts_dat/SO2.ncf"
+--
+     "TMP_POL_FILE" opened as OLD:READ-ONLY   
+     File name "/cmas/smoke/data/inventory/train_eaa/pnts_dat/PM10.ncf"
+--
+     "TMP_POL_FILE" opened as OLD:READ-ONLY   
+     File name "/cmas/smoke/data/inventory/train_eaa/pnts_dat/PM2_5.ncf"
+--
+     "TMP_POL_FILE" opened as OLD:READ-ONLY   
+     File name "/cmas/smoke/data/inventory/train_eaa/pnts_dat/PMC.ncf"
+--
+     "TMP_POL_FILE" opened as OLD:READ-ONLY   
+     File name "/cmas/smoke/data/inventory/train_eaa/pnts_dat/CO.ncf"
+--
+     "TMP_POL_FILE" opened as OLD:READ-ONLY   
+     File name "/cmas/smoke/data/inventory/train_eaa/pnts_dat/NOX.ncf"
+--
+     "TMP_POL_FILE" opened as OLD:READ-ONLY   
+     File name "/cmas/smoke/data/inventory/train_eaa/pnts_dat/VOC.ncf"
+--
+     "TMP_POL_FILE" opened as OLD:READ-ONLY   
+     File name "/cmas/smoke/data/inventory/train_eaa/pnts_dat/NH3.ncf"
+--
+     "TMP_POL_FILE" opened as OLD:READ-ONLY   
+     File name "/cmas/smoke/data/inventory/train_eaa/pnts_dat/SO2.ncf"
+--
+     "TMP_POL_FILE" opened as OLD:READ-ONLY   
+     File name "/cmas/smoke/data/inventory/train_eaa/pnts_dat/PM10.ncf"
+--
+     "TMP_POL_FILE" opened as OLD:READ-ONLY   
+     File name "/cmas/smoke/data/inventory/train_eaa/pnts_dat/PM2_5.ncf"
+--
+     "TMP_POL_FILE" opened as OLD:READ-ONLY   
+     File name "/cmas/smoke/data/inventory/train_eaa/pnts_dat/PMC.ncf"
+     File "PNTS" opened for input on unit:  98
+     /cmas/smoke/data/inventory/train_eaa/pnts.map.train_eaa.txt
+--
+     File "PELVCONFIG" opened for input on unit:  96
+     /cmas/smoke/data/inventory/romans06/point/pelvconfig.camx.txt
+--
+     File "GRIDDESC" opened for input on unit:  94
+     /cmas/smoke/data/ge_dat/GRIDDESC
+--
+     File "GRIDDESC" opened for input on unit:  94
+     /cmas/smoke/data/ge_dat/GRIDDESC
+     File "PSRC" opened for output on unit:  97
+     /cmas/smoke/data/inventory/train_eaa/psrc.txt
+--
+     File "REPPELV" opened for output on unit:  95
+     /cmas/smoke/data/reports/train_eaa/static/reppelv.train_eaa.rpt
+--
+     File "PELV" opened for output on unit:  94
+     /cmas/smoke/data/run_train_eaa/static/PELV.train_eaa.txt

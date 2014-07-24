@@ -1,0 +1,10 @@
+
+2014-06-25 lizadams@email.unc.edu 1-919-843-0518
+
+This directory contains the scripts for the smoketracking 
+and the python script log_analyzer.
+
+smoketracking - a C Shell program that invokes the log_analyzer program.
+
+This script should be run after you have completed the SMOKE runs for each sector.
+

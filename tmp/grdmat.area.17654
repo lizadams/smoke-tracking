@@ -1,0 +1,141 @@
+/cmas/smoke/data/run_train_eaa/static/logs/grdmat.ar.train_eaa.wus04.log:     --->> Normal Completion of program GRDMAT
+/cmas/smoke/data/run_train_eaa/static/logs/grdmat.ar.train_eaa.wus12.log:     --->> Normal Completion of program GRDMAT
+File name and location at time grdmat was run - note: directory location may have been moved
+-rwxrwxr-x. 1 ec2-user ec2-user 59717 Jun 19 12:50 /cmas/smoke/data/run_train_eaa/static/logs/grdmat.ar.train_eaa.wus12.log
+-rw-rw-r--. 1 zeadelma zeadelma 35186 Jul 22 10:33 /cmas/smoke/data/run_train_eaa/static/logs/grdmat.ar.train_eaa.wus04.log
+/cmas/smoke/data/run_train_eaa/static/logs/grdmat.ar.train_eaa.wus04.log:     File "AREA" opened for input on unit:  98
+/cmas/smoke/data/run_train_eaa/static/logs/grdmat.ar.train_eaa.wus04.log-     /cmas/smoke/data/inventory/train_eaa/area.map.train_eaa.txt
+--
+/cmas/smoke/data/run_train_eaa/static/logs/grdmat.ar.train_eaa.wus04.log:     File "AGREF" opened for input on unit:  96
+/cmas/smoke/data/run_train_eaa/static/logs/grdmat.ar.train_eaa.wus04.log-     /cmas/smoke/data/ge_dat/amgref.conus.txt
+--
+/cmas/smoke/data/run_train_eaa/static/logs/grdmat.ar.train_eaa.wus04.log:     File "SRGDESC" opened for input on unit:  95
+/cmas/smoke/data/run_train_eaa/static/logs/grdmat.ar.train_eaa.wus04.log-     /cmas/smoke/data/ge_dat/ROMANS04_146X101/SRGDESC
+--
+/cmas/smoke/data/run_train_eaa/static/logs/grdmat.ar.train_eaa.wus04.log:     File "SRGPRO_PATH" opened for input on unit:  94
+/cmas/smoke/data/run_train_eaa/static/logs/grdmat.ar.train_eaa.wus04.log-     /cmas/smoke/data/ge_dat/ROMANS04_146X101/USA_100_NOFILL.txt
+--
+/cmas/smoke/data/run_train_eaa/static/logs/grdmat.ar.train_eaa.wus04.log:     File "SRGPRO_PATH" opened for input on unit:  94
+/cmas/smoke/data/run_train_eaa/static/logs/grdmat.ar.train_eaa.wus04.log-     /cmas/smoke/data/ge_dat/ROMANS04_146X101/USA_240_FILL.txt
+--
+/cmas/smoke/data/run_train_eaa/static/logs/grdmat.ar.train_eaa.wus04.log:     File "SRGPRO_PATH" opened for input on unit:  94
+/cmas/smoke/data/run_train_eaa/static/logs/grdmat.ar.train_eaa.wus04.log-     /cmas/smoke/data/ge_dat/ROMANS04_146X101/USA_340_NOFILL.txt
+--
+/cmas/smoke/data/run_train_eaa/static/logs/grdmat.ar.train_eaa.wus04.log:     File "SRGPRO_PATH" opened for input on unit:  94
+/cmas/smoke/data/run_train_eaa/static/logs/grdmat.ar.train_eaa.wus04.log-     /cmas/smoke/data/ge_dat/ROMANS04_146X101/USA_350_FILL.txt
+--
+/cmas/smoke/data/run_train_eaa/static/logs/grdmat.ar.train_eaa.wus04.log:     File "GRIDDESC" opened for input on unit:  94
+/cmas/smoke/data/run_train_eaa/static/logs/grdmat.ar.train_eaa.wus04.log-     /cmas/smoke/data/ge_dat/GRIDDESC
+--
+/cmas/smoke/data/run_train_eaa/static/logs/grdmat.ar.train_eaa.wus04.log:     File "GRIDDESC" opened for input on unit:  94
+/cmas/smoke/data/run_train_eaa/static/logs/grdmat.ar.train_eaa.wus04.log-     /cmas/smoke/data/ge_dat/GRIDDESC
+--
+/cmas/smoke/data/run_train_eaa/static/logs/grdmat.ar.train_eaa.wus04.log:     File "SRGPRO_PATH" opened for input on unit:  94
+/cmas/smoke/data/run_train_eaa/static/logs/grdmat.ar.train_eaa.wus04.log-     /cmas/smoke/data/ge_dat/ROMANS04_146X101/USA_100_NOFILL.txt
+--
+/cmas/smoke/data/run_train_eaa/static/logs/grdmat.ar.train_eaa.wus04.log:     File "SRGPRO_PATH" opened for input on unit:  94
+/cmas/smoke/data/run_train_eaa/static/logs/grdmat.ar.train_eaa.wus04.log-     /cmas/smoke/data/ge_dat/ROMANS04_146X101/USA_100_NOFILL.txt
+--
+/cmas/smoke/data/run_train_eaa/static/logs/grdmat.ar.train_eaa.wus04.log:     File "SRGPRO_PATH" opened for input on unit:  94
+/cmas/smoke/data/run_train_eaa/static/logs/grdmat.ar.train_eaa.wus04.log-     /cmas/smoke/data/ge_dat/ROMANS04_146X101/USA_240_FILL.txt
+--
+/cmas/smoke/data/run_train_eaa/static/logs/grdmat.ar.train_eaa.wus04.log:     File "SRGPRO_PATH" opened for input on unit:  94
+/cmas/smoke/data/run_train_eaa/static/logs/grdmat.ar.train_eaa.wus04.log-     /cmas/smoke/data/ge_dat/ROMANS04_146X101/USA_240_FILL.txt
+--
+/cmas/smoke/data/run_train_eaa/static/logs/grdmat.ar.train_eaa.wus04.log:     File "SRGPRO_PATH" opened for input on unit:  94
+/cmas/smoke/data/run_train_eaa/static/logs/grdmat.ar.train_eaa.wus04.log-     /cmas/smoke/data/ge_dat/ROMANS04_146X101/USA_350_FILL.txt
+--
+/cmas/smoke/data/run_train_eaa/static/logs/grdmat.ar.train_eaa.wus04.log:     File "SRGPRO_PATH" opened for input on unit:  94
+/cmas/smoke/data/run_train_eaa/static/logs/grdmat.ar.train_eaa.wus04.log-     /cmas/smoke/data/ge_dat/ROMANS04_146X101/USA_350_FILL.txt
+--
+/cmas/smoke/data/run_train_eaa/static/logs/grdmat.ar.train_eaa.wus04.log:     File "SRGPRO_PATH" opened for input on unit:  94
+/cmas/smoke/data/run_train_eaa/static/logs/grdmat.ar.train_eaa.wus04.log-     /cmas/smoke/data/ge_dat/ROMANS04_146X101/USA_340_NOFILL.txt
+--
+/cmas/smoke/data/run_train_eaa/static/logs/grdmat.ar.train_eaa.wus04.log:     File "SRGPRO_PATH" opened for input on unit:  94
+/cmas/smoke/data/run_train_eaa/static/logs/grdmat.ar.train_eaa.wus04.log-     /cmas/smoke/data/ge_dat/ROMANS04_146X101/USA_340_NOFILL.txt
+--
+/cmas/smoke/data/run_train_eaa/static/logs/grdmat.ar.train_eaa.wus04.log:     File "SRGPRO_PATH" opened for input on unit:  93
+/cmas/smoke/data/run_train_eaa/static/logs/grdmat.ar.train_eaa.wus04.log-     /cmas/smoke/data/ge_dat/ROMANS04_146X101/USA_100_NOFILL.txt
+--
+/cmas/smoke/data/run_train_eaa/static/logs/grdmat.ar.train_eaa.wus04.log:     File "SRGPRO_PATH" opened for input on unit:  93
+/cmas/smoke/data/run_train_eaa/static/logs/grdmat.ar.train_eaa.wus04.log-     /cmas/smoke/data/ge_dat/ROMANS04_146X101/USA_240_FILL.txt
+--
+/cmas/smoke/data/run_train_eaa/static/logs/grdmat.ar.train_eaa.wus04.log:     File "SRGPRO_PATH" opened for input on unit:  93
+/cmas/smoke/data/run_train_eaa/static/logs/grdmat.ar.train_eaa.wus04.log-     /cmas/smoke/data/ge_dat/ROMANS04_146X101/USA_350_FILL.txt
+--
+/cmas/smoke/data/run_train_eaa/static/logs/grdmat.ar.train_eaa.wus04.log:     File "SRGPRO_PATH" opened for input on unit:  93
+/cmas/smoke/data/run_train_eaa/static/logs/grdmat.ar.train_eaa.wus04.log-     /cmas/smoke/data/ge_dat/ROMANS04_146X101/USA_340_NOFILL.txt
+--
+/cmas/smoke/data/run_train_eaa/static/logs/grdmat.ar.train_eaa.wus12.log:     File "AREA" opened for input on unit:  98
+/cmas/smoke/data/run_train_eaa/static/logs/grdmat.ar.train_eaa.wus12.log-     /home/ec2-user/smoke/data/inventory/train_eaa/area.map.train_eaa.txt
+--
+/cmas/smoke/data/run_train_eaa/static/logs/grdmat.ar.train_eaa.wus12.log:     File "AGREF" opened for input on unit:  96
+/cmas/smoke/data/run_train_eaa/static/logs/grdmat.ar.train_eaa.wus12.log-     /home/ec2-user/smoke/data/ge_dat/amgref.conus.txt
+--
+/cmas/smoke/data/run_train_eaa/static/logs/grdmat.ar.train_eaa.wus12.log:     File "SRGDESC" opened for input on unit:  95
+/cmas/smoke/data/run_train_eaa/static/logs/grdmat.ar.train_eaa.wus12.log-     /home/ec2-user/smoke/data/ge_dat/ROMANS12_98X110/SRGDESC
+--
+/cmas/smoke/data/run_train_eaa/static/logs/grdmat.ar.train_eaa.wus12.log:     File "SRGPRO_PATH" opened for input on unit:  94
+/cmas/smoke/data/run_train_eaa/static/logs/grdmat.ar.train_eaa.wus12.log-     /home/ec2-user/smoke/data/ge_dat/ROMANS12_98X110/USA_100_NOFILL.txt
+--
+/cmas/smoke/data/run_train_eaa/static/logs/grdmat.ar.train_eaa.wus12.log:     File "SRGPRO_PATH" opened for input on unit:  94
+/cmas/smoke/data/run_train_eaa/static/logs/grdmat.ar.train_eaa.wus12.log-     /home/ec2-user/smoke/data/ge_dat/ROMANS12_98X110/USA_240_FILL.txt
+--
+/cmas/smoke/data/run_train_eaa/static/logs/grdmat.ar.train_eaa.wus12.log:     File "SRGPRO_PATH" opened for input on unit:  94
+/cmas/smoke/data/run_train_eaa/static/logs/grdmat.ar.train_eaa.wus12.log-     /home/ec2-user/smoke/data/ge_dat/ROMANS12_98X110/USA_340_NOFILL.txt
+--
+/cmas/smoke/data/run_train_eaa/static/logs/grdmat.ar.train_eaa.wus12.log:     File "SRGPRO_PATH" opened for input on unit:  94
+/cmas/smoke/data/run_train_eaa/static/logs/grdmat.ar.train_eaa.wus12.log-     /home/ec2-user/smoke/data/ge_dat/ROMANS12_98X110/USA_350_FILL.txt
+--
+/cmas/smoke/data/run_train_eaa/static/logs/grdmat.ar.train_eaa.wus12.log:     File "GRIDDESC" opened for input on unit:  94
+/cmas/smoke/data/run_train_eaa/static/logs/grdmat.ar.train_eaa.wus12.log-     /home/ec2-user/smoke/data/ge_dat/GRIDDESC
+--
+/cmas/smoke/data/run_train_eaa/static/logs/grdmat.ar.train_eaa.wus12.log:     File "GRIDDESC" opened for input on unit:  94
+/cmas/smoke/data/run_train_eaa/static/logs/grdmat.ar.train_eaa.wus12.log-     /home/ec2-user/smoke/data/ge_dat/GRIDDESC
+--
+/cmas/smoke/data/run_train_eaa/static/logs/grdmat.ar.train_eaa.wus12.log:     File "SRGPRO_PATH" opened for input on unit:  94
+/cmas/smoke/data/run_train_eaa/static/logs/grdmat.ar.train_eaa.wus12.log-     /home/ec2-user/smoke/data/ge_dat/ROMANS12_98X110/USA_240_FILL.txt
+--
+/cmas/smoke/data/run_train_eaa/static/logs/grdmat.ar.train_eaa.wus12.log:     File "SRGPRO_PATH" opened for input on unit:  94
+/cmas/smoke/data/run_train_eaa/static/logs/grdmat.ar.train_eaa.wus12.log-     /home/ec2-user/smoke/data/ge_dat/ROMANS12_98X110/USA_240_FILL.txt
+--
+/cmas/smoke/data/run_train_eaa/static/logs/grdmat.ar.train_eaa.wus12.log:     File "SRGPRO_PATH" opened for input on unit:  94
+/cmas/smoke/data/run_train_eaa/static/logs/grdmat.ar.train_eaa.wus12.log-     /home/ec2-user/smoke/data/ge_dat/ROMANS12_98X110/USA_340_NOFILL.txt
+--
+/cmas/smoke/data/run_train_eaa/static/logs/grdmat.ar.train_eaa.wus12.log:     File "SRGPRO_PATH" opened for input on unit:  94
+/cmas/smoke/data/run_train_eaa/static/logs/grdmat.ar.train_eaa.wus12.log-     /home/ec2-user/smoke/data/ge_dat/ROMANS12_98X110/USA_340_NOFILL.txt
+--
+/cmas/smoke/data/run_train_eaa/static/logs/grdmat.ar.train_eaa.wus12.log:     File "SRGPRO_PATH" opened for input on unit:  94
+/cmas/smoke/data/run_train_eaa/static/logs/grdmat.ar.train_eaa.wus12.log-     /home/ec2-user/smoke/data/ge_dat/ROMANS12_98X110/USA_350_FILL.txt
+--
+/cmas/smoke/data/run_train_eaa/static/logs/grdmat.ar.train_eaa.wus12.log:     File "SRGPRO_PATH" opened for input on unit:  94
+/cmas/smoke/data/run_train_eaa/static/logs/grdmat.ar.train_eaa.wus12.log-     /home/ec2-user/smoke/data/ge_dat/ROMANS12_98X110/USA_350_FILL.txt
+--
+/cmas/smoke/data/run_train_eaa/static/logs/grdmat.ar.train_eaa.wus12.log:     File "SRGPRO_PATH" opened for input on unit:  94
+/cmas/smoke/data/run_train_eaa/static/logs/grdmat.ar.train_eaa.wus12.log-     /home/ec2-user/smoke/data/ge_dat/ROMANS12_98X110/USA_100_NOFILL.txt
+--
+/cmas/smoke/data/run_train_eaa/static/logs/grdmat.ar.train_eaa.wus12.log:     File "SRGPRO_PATH" opened for input on unit:  94
+/cmas/smoke/data/run_train_eaa/static/logs/grdmat.ar.train_eaa.wus12.log-     /home/ec2-user/smoke/data/ge_dat/ROMANS12_98X110/USA_100_NOFILL.txt
+--
+/cmas/smoke/data/run_train_eaa/static/logs/grdmat.ar.train_eaa.wus12.log:     File "SRGPRO_PATH" opened for input on unit:  93
+/cmas/smoke/data/run_train_eaa/static/logs/grdmat.ar.train_eaa.wus12.log-     /home/ec2-user/smoke/data/ge_dat/ROMANS12_98X110/USA_240_FILL.txt
+--
+/cmas/smoke/data/run_train_eaa/static/logs/grdmat.ar.train_eaa.wus12.log:     File "SRGPRO_PATH" opened for input on unit:  93
+/cmas/smoke/data/run_train_eaa/static/logs/grdmat.ar.train_eaa.wus12.log-     /home/ec2-user/smoke/data/ge_dat/ROMANS12_98X110/USA_340_NOFILL.txt
+--
+/cmas/smoke/data/run_train_eaa/static/logs/grdmat.ar.train_eaa.wus12.log:     File "SRGPRO_PATH" opened for input on unit:  93
+/cmas/smoke/data/run_train_eaa/static/logs/grdmat.ar.train_eaa.wus12.log-     /home/ec2-user/smoke/data/ge_dat/ROMANS12_98X110/USA_350_FILL.txt
+--
+/cmas/smoke/data/run_train_eaa/static/logs/grdmat.ar.train_eaa.wus12.log:     File "SRGPRO_PATH" opened for input on unit:  93
+/cmas/smoke/data/run_train_eaa/static/logs/grdmat.ar.train_eaa.wus12.log-     /home/ec2-user/smoke/data/ge_dat/ROMANS12_98X110/USA_100_NOFILL.txt
+/cmas/smoke/data/run_train_eaa/static/logs/grdmat.ar.train_eaa.wus04.log:     File "ASRC" opened for output on unit:  97
+/cmas/smoke/data/run_train_eaa/static/logs/grdmat.ar.train_eaa.wus04.log-     /cmas/smoke/data/inventory/train_eaa/asrc.txt
+--
+/cmas/smoke/data/run_train_eaa/static/logs/grdmat.ar.train_eaa.wus04.log:     File "AGSUP" opened for output on unit:  94
+/cmas/smoke/data/run_train_eaa/static/logs/grdmat.ar.train_eaa.wus04.log-     /cmas/smoke/data/run_train_eaa/static/agsup.wus04.train_eaa.txt
+--
+/cmas/smoke/data/run_train_eaa/static/logs/grdmat.ar.train_eaa.wus12.log:     File "ASRC" opened for output on unit:  97
+/cmas/smoke/data/run_train_eaa/static/logs/grdmat.ar.train_eaa.wus12.log-     /home/ec2-user/smoke/data/inventory/train_eaa/asrc.txt
+--
+/cmas/smoke/data/run_train_eaa/static/logs/grdmat.ar.train_eaa.wus12.log:     File "AGSUP" opened for output on unit:  94
+/cmas/smoke/data/run_train_eaa/static/logs/grdmat.ar.train_eaa.wus12.log-     /home/ec2-user/smoke/data/run_train_eaa/static/agsup.wus12.train_eaa.txt

@@ -52,6 +52,14 @@ while ( $done == 0 )
          set id = `/bin/grep -c 'Normal Completion' $area_file`
          if ( $id >= 1 ) then
            echo "$program $array[1] `/bin/grep -c 'Normal Completion' $area_file` times"
+           echo 'File name and location at time' ${program} 'was run - NOTE: Directory Location may have been moved after run completed' >> $area_file
+            ls -lrt $LOGS/${program}.ar.*.log >> $area_file
+           grep -A 1 OPEN $LOGS/${program}.ar.*.log >> $area_file
+           grep -A 1 'opened as NEW' $LOGS/${program}.ar.*.log >> $area_file
+           grep -A 1 'opened as UNKNOWN' $LOGS/${program}.pt.*.log >> $point_file
+           grep -A 1 'opened as OLD' $LOGS/${program}.pt.*.log >> $point_file
+           grep -A 1 -i 'opened for input' $LOGS/${program}.ar.*.log >> $area_file
+           grep -A 1 -i 'opened for output' $LOGS/${program}.ar.*.log >> $area_file
          else if ($id == 0) then
         /bin/grep -B 4 -A 2 'ERROR ABORT in subroutine' $LOGS/${program}.ar.*.log
          echo "========================================="
@@ -68,15 +76,23 @@ while ( $done == 0 )
      end
          echo "Log File Names and Date Stamps"
        ls -lrt $LOGS/*.ar*.log
-       set mergelogdate = `stat -c%Y $LOGS/smkmerge*ar*.log`
+       set mergelogdate = `stat -c%Y $LOGS/smkmerge*ar*$GRID*.log`
+       echo 'mergelogdate ='$mergelogdate
        set invlogdate   = `stat -c%Y $LOGS/smkinven*ar*.log`
+       echo 'invlogdate =' $invlogdate
        set spcmatcmaqdate   = `stat -c%Y $LOGS/spcmat*ar*cmaq*.log`
+       echo 'spcmatcmaqdate   =' $spcmatcmaqdate
        set spcmatcamxdate = `stat -c%Y $LOGS/spcmat*ar*camx*.log`
-       set grdmatdate   = `stat -c%Y $LOGS/grdmat*ar*.log`
+       echo 'spcmatcamxdate =' $spcmatcamxdate
+       set grdmatdate   = `stat -c%Y $LOGS/grdmat*ar*$GRID*.log`
+       echo 'grdmatdate = '$grdmatdate
        set temporaldate = `stat -c%Y $LOGS/temporal*ar*.log`
-       set smk2emisdate = `stat -c%Y $LOGS/smk2emis*ar*.log`
+       echo 'temporaldate =' $temporaldate
+       set smk2emisdate = `stat -c%Y $LOGS/smk2emis*ar*$GRID*.log`
+       echo 'smk2emisdate =' $smk2emisdate
 
        set filedate = $invlogdate
+#       echo 'filedate = '$invlogdate
                   echo "============================="
                    echo "checking if smkinven was run prior to other programs"
                   echo "=============================="
@@ -107,6 +123,7 @@ while ( $done == 0 )
                   endif
            else
                if ($program == smkinven) then
+                  echo 'smkinven'
                else if ($program == spcmat) then
                  echo "The logfile for smkinven is NEWER than $program. You may need to rerun all of the programs after smkinven"
                else if ($program == grdmat) then
@@ -127,19 +144,19 @@ while ( $done == 0 )
                   echo "=============================="
        foreach program ( smkinven spcmat grdmat temporal smk2emis smkmerge )
          if ($program == smkinven) then
-              set logdate = $invlogdate
+              set nlogdate = $invlogdate
            else if ($program == spcmat) then
-              set logdate = $spcmatcmaqdate
+              set nlogdate = $spcmatcmaqdate
            else if ($program == grdmat) then
-              set logdate = $grdmatdate
+              set nlogdate = $grdmatdate
            else if ($program == temporal) then
-              set logdate = $temporaldate
+              set nlogdate = $temporaldate
            else if ($program == smkmerge) then
-              set logdate = $mergelogdate
+              set nlogdate = $mergelogdate
            else if ($program == smk2emis) then
-              set logdate = $smk2emisdate
+              set nlogdate = $smk2emisdate
            endif
-           if ($logdate <= $mergelogdate) then
+           if ($nlogdate <= $mergelogdate) then
                     if ($program == smkmerge) then
                     else if ($program == spcmat) then
                        echo "smkmerge was run after $program"
@@ -169,10 +186,10 @@ while ( $done == 0 )
        set maxtmp = 0
        foreach logdate ( $mergelogdate $invlogdate $spcmatcmaqdate $grdmatdate $temporaldate )
            if ($logdate >= $maxtmp) then
-       ##        echo "date $logdate is older recent than previous program"
+       #        echo "date $logdate is older recent than previous program"
                set maxtmp = $logdate
            else
-        ##       echo "date $logdate is more recent than the next program, may need to rerun"
+       #        echo "date $logdate is more recent than the next program, may need to rerun"
            endif
        end
           if ( $maxtmp == $mergelogdate ) then
@@ -184,14 +201,22 @@ while ( $done == 0 )
           endif
 
               echo 'note: spcmat, grdmat and temporal can be run independently, as long as they are run after smkinven and prior to smkmerge'
-          rm ./tmp/*.area.*
+#          rm ./tmp/*.area.*
     else if ( "$input[2]" == 'point' ) then
-    foreach program ( smkinven spcmat grdmat temporal smkmerge )
+    foreach program ( smkinven spcmat elevpoint grdmat laypoint mrgelev temporal smkmerge smk2emis)
          set point_file = "./tmp/${program}.point.$$"
          /bin/grep 'Normal Completion' $LOGS/${program}.pt.*.log >> $point_file
          set id = `/bin/grep -c 'Normal Completion' $point_file`
          if ( $id >= 1 ) then
            echo "$program $array[1] `/bin/grep -c 'Normal Completion' $point_file` times"
+           echo 'File name and location at time' ${program} 'was run - NOTE: Directory Location may have been moved after run completed' >> $point_file
+            ls -lrt $LOGS/${program}.pt.*.log >> $point_file
+           grep -A 1 OPEN $LOGS/${program}.pt.*.log >> $point_file
+           grep -A 1 'opened as NEW' $LOGS/${program}.pt.*.log >> $point_file
+           grep -A 1 'opened as UNKNOWN' $LOGS/${program}.pt.*.log >> $point_file
+           grep -A 1 'opened as OLD' $LOGS/${program}.pt.*.log >> $point_file
+           grep -A 1 -i 'opened for input' $LOGS/${program}.pt.*.log >> $point_file
+           grep -A 1 -i 'opened for output' $LOGS/${program}.pt.*.log >> $point_file
          else if ($id == 0) then
            /bin/grep -B 4 -A 2 'ERROR ABORT in subroutine' $LOGS/${program}.pt.*.log
          echo "========================================="
@@ -208,22 +233,39 @@ while ( $done == 0 )
     end
          echo "Log File Names and Date Stamps"
        ls -l $LOGS/*.pt*.log
-       set mergelogdate = `stat -c%Y $LOGS/smkmerge*pt*.log`
+       set mergelogdate = `stat -c%Y $LOGS/smkmerge*pt*$GRID*.log`
+       echo 'mergelogdate ='$mergelogdate
        set invlogdate   = `stat -c%Y $LOGS/smkinven*pt*.log`
-       set spcmatdate   = `stat -c%Y $LOGS/spcmat*pt*.log`
-       set grdmatdate   = `stat -c%Y $LOGS/grdmat*pt*.log`
+       echo 'invlogdate =' $invlogdate
+      set spcmatcmaqdate   = `stat -c%Y $LOGS/spcmat*pt*cmaq*.log`
+       echo 'spcmatcmaqdate   =' $spcmatcmaqdate
+       set spcmatcamxdate = `stat -c%Y $LOGS/spcmat*pt*camx*.log`
+       echo 'spcmatcamxdate =' $spcmatcamxdate
+       set elevpointdate   = `stat -c%Y $LOGS/elevpoint*pt*.log`
+       echo 'elevpointdate =' $elevpointdate
+       set mrgelevdate   = `stat -c%Y $LOGS/mrgelev*pt*$GRID*.log`
+       echo 'mrgelevdate =' $mrgelevdate
+       set grdmatdate   = `stat -c%Y $LOGS/grdmat*pt*$GRID*.log`
+       echo 'grdmatdate =' $grdmatdate
+       set laypointdate   = `stat -c%Y $LOGS/laypoint*pt*$GRID*.log`
+       echo 'laypointdate =' $grdmatdate
        set temporaldate = `stat -c%Y $LOGS/temporal*pt*.log`
+       echo 'temporaldate =' $temporaldate
+       set smk2emisdate = `stat -c%Y $LOGS/smk2emis*pt*$GRID*.log`
+       echo 'smk2emisdate =' $smk2emisdate
        set filedate = $invlogdate
                  echo "============================="
                    echo "checking if smkinven was run prior to other programs"
                   echo "=============================="
-       foreach program ( smkinven spcmat grdmat temporal smkmerge )
+       foreach program ( smkinven spcmat grdmat laypoint temporal smkmerge )
            if ($program == smkinven) then
               set logdate = $invlogdate 
            else if ($program == spcmat) then
-              set logdate = $spcmatdate
+              set logdate = $spcmatcmaqdate
            else if ($program == grdmat) then
               set logdate = $grdmatdate
+           else if ($program == laypoint) then
+              set logdate = $laypointdate
            else if ($program == temporal) then
               set logdate = $temporaldate
            else if ($program == smkmerge) then
@@ -234,6 +276,8 @@ while ( $done == 0 )
                if ($program == spcmat) then
                    echo "$program was run after smkinven"
                else if ($program == grdmat) then
+                   echo "$program was run after smkinven"
+               else if ($program == laypoint) then
                    echo "$program was run after smkinven"
                else if ($program == temporal) then
                    echo "$program was run after smkinven"
@@ -246,6 +290,8 @@ while ( $done == 0 )
                  echo "The logfile for smkinven is NEWER than $program. You need to rerun programs after smkinven"
                else if ($program == grdmat) then
                  echo "The logfile for smkinven is NEWER than $program. You need to rerun grdmat"
+               else if ($program == laypoint) then
+                 echo "The logfile for smkinven is NEWER than $program. You need to rerun laypoint"
                else if ($program == temporal) then 
                  echo "The logfile for smkinven is NEWER than $program. You need to rerun temporal"
                else if ($program == smkmerge) then
@@ -259,13 +305,15 @@ while ( $done == 0 )
                 echo "============================="
                    echo "checking if smkmerge was run after all other programs"
                   echo "=============================="
-       foreach program ( smkinven spcmat grdmat temporal smkmerge )
+       foreach program ( smkinven spcmat grdmat laypoint temporal smkmerge )
          if ($program == smkinven) then
               set logdate = $invlogdate
            else if ($program == spcmat) then
-              set logdate = $spcmatdate
+              set logdate = $spcmatcmaqdate
            else if ($program == grdmat) then
               set logdate = $grdmatdate
+           else if ($program == laypoint) then
+              set logdate = $laypointdate
            else if ($program == temporal) then
               set logdate = $temporaldate
            else if ($program == smkmerge) then
@@ -276,6 +324,8 @@ while ( $done == 0 )
                     else if ($program == spcmat) then
                        echo "smkmerge was run after $program"
                     else if ($program == grdmat) then
+                       echo "smkmerge was run after $program"
+                    else if ($program == laypoint) then
                        echo "smkmerge was run after $program"
                     else if ($program == temporal) then
                        echo "smkmerge was run after $program"
@@ -288,6 +338,8 @@ while ( $done == 0 )
                  echo "ERROR - smkmerge was run before $program. You need to RERUN smkmerge"
                else if ($program == grdmat) then
                  echo "ERROR - smkmerge was run before $program. You need to RERUN smkmerge"
+               else if ($program == laypoint) then
+                 echo "ERROR - smkmerge was run before $program. You need to RERUN smkmerge"
                else if ($program == temporal) then
                  echo "ERROR - smkmerge was run before $program. You need to RERUN smkmerge"
                else if ($program == smkmerge) then
@@ -297,7 +349,7 @@ while ( $done == 0 )
            endif
        end
        set maxtmp = 0
-       foreach logdate ( $mergelogdate $invlogdate $spcmatdate $grdmatdate $temporaldate )
+       foreach logdate ( $mergelogdate $invlogdate $spcmatcmaqdate $grdmatdate $laypointdate $temporaldate )
            if ($logdate >= $maxtmp) then
        ##        echo "date $logdate is older recent than previous program"
                set maxtmp = $logdate
@@ -312,7 +364,7 @@ while ( $done == 0 )
           endif
 
               echo 'note: spcmat, grdmat and temporal can be run independently, as long as they are run after smkinven and prior to smkmerge'
-          rm ./tmp/*.point.*
+#          rm ./tmp/*.point.*
     else if ( "$input[2]" == 'biogenic' ) then
     foreach program ( tmpbeis3 normbeis3 smk2emis smkmerge )
          set biogenic_file = "./tmp/${program}.biogenic.$$"
