@@ -19,7 +19,7 @@
      exit
    endif
 
-set log_analyzer = `python /cmas/smoke/smoke_tracking/log_analyzer/log_analyzer.py -k /cmas/smoke/smoke_tracking/log_analyzer/known_messages.txt -l 2 -f ~/tmp/test_log4.csv $LOGS/*pt.*log`
+#set log_analyzer = `python smoke_tracking/log_analyzer/log_analyzer.py -k /cmas/smoke/smoke_tracking/log_analyzer/known_messages.txt -l 2 -f ~/tmp/test_log4.csv $LOGS/$SRCABBR/*_${SRCABBR}_*log`
 
 set done = 0
 set prefix_byte_count = 0
@@ -41,31 +41,32 @@ while ( $done == 0 )
   if ( "$input[1]" == 'status' ) then
     #  create a temporary directory to store files containing grep output
        mkdir -p ./tmp
-       set temp_area_file = "./tmp/tmp.area.$$"
 
     set array = (Success Failure)
-    if ( "$input[2]" == 'area' ) then
-    foreach program ( smkinven spcmat grdmat temporal smkmerge smk2emis)
-         set area_file = "./tmp/${program}.area.$$"
-         /bin/grep 'Normal Completion' $LOGS/${program}.ar.*.log >> $area_file
+    if ( "$input[2]" == 'A' ) then
+    foreach program ( smkinven spcmat grdmat temporal smkmerge ) 
+#smk2emis
+         set area_file = "./tmp/${program}.$SRCABBR.$$"
+         set logfile = "${program}_${SRCABBR}_*.log"
+         grep 'Normal Completion' $LOGS/$SRCABBR/$logfile >> $area_file
          echo "========================================="
-         set id = `/bin/grep -c 'Normal Completion' $area_file`
+         set id = `grep -c 'Normal Completion' $area_file`
          if ( $id >= 1 ) then
-           echo "$program $array[1] `/bin/grep -c 'Normal Completion' $area_file` times"
+           echo "$program $array[1] `grep -c 'Normal Completion' $area_file` times"
            echo 'File name and location at time' ${program} 'was run - NOTE: Directory Location may have been moved after run completed' >> $area_file
-            ls -lrt $LOGS/${program}.ar.*.log >> $area_file
-           grep -A 1 OPEN $LOGS/${program}.ar.*.log >> $area_file
-           grep -A 1 'opened as NEW' $LOGS/${program}.ar.*.log >> $area_file
-           grep -A 1 'opened as UNKNOWN' $LOGS/${program}.pt.*.log >> $point_file
-           grep -A 1 'opened as OLD' $LOGS/${program}.pt.*.log >> $point_file
-           grep -A 1 -i 'opened for input' $LOGS/${program}.ar.*.log >> $area_file
-           grep -A 1 -i 'opened for output' $LOGS/${program}.ar.*.log >> $area_file
+            ls -lrt $LOGS/$SRCABBR/$logfile >> $area_file
+           grep -A 1 OPEN $LOGS/$SRCABBR/$logfile >> $area_file
+           grep -A 1 'opened as NEW' $LOGS/$SRCABBR/$logfile >> $area_file
+           grep -A 1 'opened as UNKNOWN' $LOGS/$SRCABBR/$logfile >> $area_file
+           grep -A 1 'opened as OLD' $LOGS/$SRCABBR/$logfile >> $area_file
+           grep -A 1 -i 'opened for input' $LOGS/$SRCABBR/$logfile >> $area_file
+           grep -A 1 -i 'opened for output' $LOGS/$SRCABBR/$logfile >> $area_file
          else if ($id == 0) then
-        /bin/grep -B 4 -A 2 'ERROR ABORT in subroutine' $LOGS/${program}.ar.*.log
+        grep -B 4 -A 2 'ERROR ABORT in subroutine' $LOGS/$SRCABBR/$logfile
          echo "========================================="
            echo "${program} logfile unsuccessful: check and rerun program"
            echo "location of log file:"
-           ls -lrt $LOGS/${program}.ar.*.log
+           ls -lrt $LOGS/$SRCABBR/$logfile
            echo "----------------------------------"
            echo $log_analyzer
                 echo "more information is available from log_analyzer under ~/tmp/test.log4"
@@ -75,20 +76,20 @@ while ( $done == 0 )
          echo "========================================="
      end
          echo "Log File Names and Date Stamps"
-       ls -lrt $LOGS/*.ar*.log
-       set mergelogdate = `stat -c%Y $LOGS/smkmerge*ar*$GRID*.log`
+       ls -lrt $LOGS/$SRCABBR/*_${SRCABBR}_*.log
+       set mergelogdate = `stat -c%Y $LOGS/$SRCABBR/smkmerge_${SRCABBR}_*${G_STDATE}_${GRID}*.log`
        echo 'mergelogdate ='$mergelogdate
-       set invlogdate   = `stat -c%Y $LOGS/smkinven*ar*.log`
+       set invlogdate   = `stat -c%Y $LOGS/$SRCABBR/smkinven_${SRCABBR}_*.log`
        echo 'invlogdate =' $invlogdate
-       set spcmatcmaqdate   = `stat -c%Y $LOGS/spcmat*ar*cmaq*.log`
+       set spcmatcmaqdate   = `stat -c%Y $LOGS/$SRCABBR/spcmat_${SRCABBR}_*cmaq*.log`
        echo 'spcmatcmaqdate   =' $spcmatcmaqdate
-       set spcmatcamxdate = `stat -c%Y $LOGS/spcmat*ar*camx*.log`
+       set spcmatcamxdate = `stat -c%Y $LOGS/$SRCABBR/spcmat_${SRCABBR}_*camx*.log`
        echo 'spcmatcamxdate =' $spcmatcamxdate
-       set grdmatdate   = `stat -c%Y $LOGS/grdmat*ar*$GRID*.log`
+       set grdmatdate   = `stat -c%Y $LOGS/$SRCABBR/grdmat_${SRCABBR}_*$GRID*.log`
        echo 'grdmatdate = '$grdmatdate
-       set temporaldate = `stat -c%Y $LOGS/temporal*ar*.log`
+       set temporaldate = `stat -c%Y $LOGS/$SRCABBR/temporal_${SRCABBR}_*.log`
        echo 'temporaldate =' $temporaldate
-       set smk2emisdate = `stat -c%Y $LOGS/smk2emis*ar*$GRID*.log`
+       set smk2emisdate = `stat -c%Y $LOGS/$SRCABBR/smk2emis_${SRCABBR}_*$GRID*.log`
        echo 'smk2emisdate =' $smk2emisdate
 
        set filedate = $invlogdate
@@ -201,28 +202,30 @@ while ( $done == 0 )
           endif
 
               echo 'note: spcmat, grdmat and temporal can be run independently, as long as they are run after smkinven and prior to smkmerge'
-#          rm ./tmp/*.area.*
-    else if ( "$input[2]" == 'point' ) then
+#          rm ./tmp/*${SRCABBR}*
+
+    else if ( "$input[2]" == 'P' ) then
     foreach program ( smkinven spcmat elevpoint grdmat laypoint mrgelev temporal smkmerge smk2emis)
-         set point_file = "./tmp/${program}.point.$$"
-         /bin/grep 'Normal Completion' $LOGS/${program}.pt.*.log >> $point_file
-         set id = `/bin/grep -c 'Normal Completion' $point_file`
+         set point_file = "./tmp/${program}.$SRCABBR.$$"
+         set logfile = "${program}_${SRCABBR}_*.log"
+         grep 'Normal Completion' $LOGS/$SRCABBR/$logfile >> ${point_file}
+         set id = `grep -c 'Normal Completion' ${point_file}`
          if ( $id >= 1 ) then
-           echo "$program $array[1] `/bin/grep -c 'Normal Completion' $point_file` times"
+           echo "$program $array[1] `grep -c 'Normal Completion' $point_file` times"
            echo 'File name and location at time' ${program} 'was run - NOTE: Directory Location may have been moved after run completed' >> $point_file
-            ls -lrt $LOGS/${program}.pt.*.log >> $point_file
-           grep -A 1 OPEN $LOGS/${program}.pt.*.log >> $point_file
-           grep -A 1 'opened as NEW' $LOGS/${program}.pt.*.log >> $point_file
-           grep -A 1 'opened as UNKNOWN' $LOGS/${program}.pt.*.log >> $point_file
-           grep -A 1 'opened as OLD' $LOGS/${program}.pt.*.log >> $point_file
-           grep -A 1 -i 'opened for input' $LOGS/${program}.pt.*.log >> $point_file
-           grep -A 1 -i 'opened for output' $LOGS/${program}.pt.*.log >> $point_file
+            ls -lrt $LOGS/$SRCABBR/$logfile >> $point_file
+           grep -A 1 OPEN $LOGS/$SRCABBR/$logfile >> $point_file
+           grep -A 1 'opened as NEW' $LOGS/$SRCABBR/$logfile >> $point_file
+           grep -A 1 'opened as UNKNOWN' $LOGS/$SRCABBR/$logfile >> $point_file
+           grep -A 1 'opened as OLD' $LOGS/$SRCABBR/$logfile >> $point_file
+           grep -A 1 -i 'opened for input' $LOGS/$SRCABBR/$logfile >> $point_file
+           grep -A 1 -i 'opened for output' $LOGS/$SRCABBR/$logfile >> $point_file
          else if ($id == 0) then
-           /bin/grep -B 4 -A 2 'ERROR ABORT in subroutine' $LOGS/${program}.pt.*.log
+           grep -B 4 -A 2 'ERROR ABORT in subroutine' $LOGS/$SRCABBR/$logfile
          echo "========================================="
            echo "${program} logfile unsuccessful: check and rerun program"
            echo "location of log file:"
-           ls -lrt $LOGS/${program}.pt.*.log
+           ls -lrt $LOGS/$SRCABBR/$logfile
            echo "----------------------------------"
            echo $log_analyzer
                 echo "more information is available from log_analyzer under ~/tmp/test.log4"
@@ -232,26 +235,26 @@ while ( $done == 0 )
          echo "========================================="
     end
          echo "Log File Names and Date Stamps"
-       ls -l $LOGS/*.pt*.log
-       set mergelogdate = `stat -c%Y $LOGS/smkmerge*pt*$GRID*.log`
+       ls -l $LOGS/$SRCABBR/*_${SRCABBR}_*.log
+       set mergelogdate = `stat -c%Y $LOGS/$SRCABBR/smkmerge_${SRCABBR}_*${G_STDATE}_$GRID*.log`
        echo 'mergelogdate ='$mergelogdate
-       set invlogdate   = `stat -c%Y $LOGS/smkinven*pt*.log`
+       set invlogdate   = `stat -c%Y $LOGS/$SRCABBR/smkinven_${SRCABBR}_*.log`
        echo 'invlogdate =' $invlogdate
-      set spcmatcmaqdate   = `stat -c%Y $LOGS/spcmat*pt*cmaq*.log`
+      set spcmatcmaqdate   = `stat -c%Y $LOGS/$SRCABBR/spcmat_${SRCABBR}_*cmaq*.log`
        echo 'spcmatcmaqdate   =' $spcmatcmaqdate
-       set spcmatcamxdate = `stat -c%Y $LOGS/spcmat*pt*camx*.log`
+       set spcmatcamxdate = `stat -c%Y $LOGS/$SRCABBR/spcmat_${SRCABBR}_*camx*.log`
        echo 'spcmatcamxdate =' $spcmatcamxdate
-       set elevpointdate   = `stat -c%Y $LOGS/elevpoint*pt*.log`
+       set elevpointdate   = `stat -c%Y $LOGS/$SRCABBR/elevpoint_${SRCABBR}_*.log`
        echo 'elevpointdate =' $elevpointdate
-       set mrgelevdate   = `stat -c%Y $LOGS/mrgelev*pt*$GRID*.log`
+       set mrgelevdate   = `stat -c%Y $LOGS/$SRCABBR/mrgelev_${SRCABBR}_*$GRID*.log`
        echo 'mrgelevdate =' $mrgelevdate
-       set grdmatdate   = `stat -c%Y $LOGS/grdmat*pt*$GRID*.log`
+       set grdmatdate   = `stat -c%Y $LOGS/$SRCABBR/grdmat_${SRCABBR}_*$GRID*.log`
        echo 'grdmatdate =' $grdmatdate
-       set laypointdate   = `stat -c%Y $LOGS/laypoint*pt*$GRID*.log`
+       set laypointdate   = `stat -c%Y $LOGS/$SRCABBR/laypoint_${SRCABBR}_*$GRID*.log`
        echo 'laypointdate =' $grdmatdate
-       set temporaldate = `stat -c%Y $LOGS/temporal*pt*.log`
+       set temporaldate = `stat -c%Y $LOGS/$SRCABBR/temporal_${SRCABBR}_*.log`
        echo 'temporaldate =' $temporaldate
-       set smk2emisdate = `stat -c%Y $LOGS/smk2emis*pt*$GRID*.log`
+       set smk2emisdate = `stat -c%Y $LOGS/$SRCABBR/smk2emis_${SRCABBR}_*$GRID*.log`
        echo 'smk2emisdate =' $smk2emisdate
        set filedate = $invlogdate
                  echo "============================="
@@ -364,12 +367,12 @@ while ( $done == 0 )
           endif
 
               echo 'note: spcmat, grdmat and temporal can be run independently, as long as they are run after smkinven and prior to smkmerge'
-#          rm ./tmp/*.point.*
-    else if ( "$input[2]" == 'biogenic' ) then
+#          rm ./tmp/*_${SRCABBR}_*
+    else if ( "$input[2]" == 'B' ) then
     foreach program ( tmpbeis3 normbeis3 smk2emis smkmerge )
          set biogenic_file = "./tmp/${program}.biogenic.$$"
-         /bin/grep 'Normal Completion' $LOGS/${program}.bg.*.log >> $biogenic_file
-         echo "$program $array[1] `/bin/grep -c 'Normal Completion' $biogenic_file` times"
+         grep 'Normal Completion' $LOGS/${program}.bg.*.log >> $biogenic_file
+         echo "$program $array[1] `grep -c 'Normal Completion' $biogenic_file` times"
     end
        ls -l $LOGS/*.bg*.log
        set mergelogdate = `stat -c%Y $LOGS/smkmerge*bg*.log`
@@ -395,8 +398,8 @@ while ( $done == 0 )
     else if ( "$input[2]" == 'mobile' ) then
     foreach program ( smkinven grdmat smkmerge )
          set mobile_file = "./tmp/${program}.mobile.$$"
-         /bin/grep 'Normal Completion' $LOGS/${program}.mb.*.log >> $mobile_file
-         echo "$program $array[1] `/bin/grep -c 'Normal Completion' $mobile_file` times"
+         grep 'Normal Completion' $LOGS/${program}.mb.*.log >> $mobile_file
+         echo "$program $array[1] `grep -c 'Normal Completion' $mobile_file` times"
     end
        ls -l $LOGS/*.mb*.log 
        set mergelogdate = `stat -c%Y $LOGS/smkmerge*mb*.log`
