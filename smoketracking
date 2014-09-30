@@ -63,7 +63,7 @@ while ( $done == 0 )
            grep -A 1 OPEN $LOGS/$SRCABBR/$logfile >> $reportfile
            grep -A 1 'opened as NEW' $LOGS/$SRCABBR/$logfile >> $reportfile
            grep -A 1 'opened as UNKNOWN' $LOGS/$SRCABBR/$logfile >> $reportfile
-           grep -A 1 'opened as OLD' $LOGS/$SRCABBR/$logfile | awk -f ' ' '$2 != TMP_POL_FILE' >> $reportfile
+             grep 'opened as OLD' $LOGS/$SRCABBR/$logfile | grep -v TMP >> $reportfile
            grep -A 1 -i 'opened for input' $LOGS/$SRCABBR/$logfile >> $reportfile
            grep -A 1 -i 'opened for output' $LOGS/$SRCABBR/$logfile >> $reportfile
            grep 'Value for' $LOGS/$SRCABBR/$logfile >> $reportfile
