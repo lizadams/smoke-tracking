@@ -48,14 +48,17 @@ while ( $done == 0 )
 #smk2emis
          set tmp_file = "./tmp/${program}.$SRCABBR.$$"
          set logfile = "${program}_${SRCABBR}_*.log"
-         set reportfile = "report.$$"
-         grep 'Normal Completion' $LOGS/$SRCABBR/$logfile >> $tmp_file
+         set reportfile = "report.$SRCABBR.${G_STDATE}_stdate.$$.log"
+         grep 'Normal Completion' $LOGS/$SRCABBR/$logfile >> $tmp_file 
          echo "========================================="
          set id = `grep -c 'Normal Completion' $tmp_file`
          if ( $id >= 1 ) then
-           echo "$program $array[1] `grep -c 'Normal Completion' $tmp_file` times"
+           echo "=========================================" |& tee -a $reportfile
+           echo "$program $array[1] `grep -c 'Normal Completion' $tmp_file` times" |& tee -a $reportfile
+           echo "=========================================" |& tee -a $reportfile 
+           echo ${SRCABBR} "REPORT: " >> $reportfile
            echo 'File name and location at time' ${program} 'was run - NOTE: Directory Location may have been moved after run completed' >> $reportfile
-         # note >> appends to the file
+         # note >> appends to the end of the file
            ls -lrt $LOGS/$SRCABBR/$logfile >> $reportfile
            grep -A 1 OPEN $LOGS/$SRCABBR/$logfile >> $reportfile
            grep -A 1 'opened as NEW' $LOGS/$SRCABBR/$logfile >> $reportfile
@@ -78,8 +81,10 @@ while ( $done == 0 )
          endif
          echo "========================================="
      end
-         echo "Log File Names and Date Stamps"
-       ls -lrt $LOGS/$SRCABBR/*_${SRCABBR}_*.log
+           echo "=========================================" |& tee -a $reportfile
+         echo "Log File Names and Date Stamps" |& tee -a $reportfile 
+           echo "=========================================" |& tee -a $reportfile
+       ls -lrt $LOGS/$SRCABBR/*_${SRCABBR}_*.log |& tee -a $reportfile
        set mergelogdate = `stat -c%Y $LOGS/$SRCABBR/smkmerge_${SRCABBR}_*${G_STDATE}_${GRID}*.log`
        echo 'mergelogdate ='$mergelogdate
        set invlogdate   = `stat -c%Y $LOGS/$SRCABBR/smkinven_${SRCABBR}_*.log`
@@ -209,20 +214,23 @@ while ( $done == 0 )
 
     else if ( "$input[2]" == 'P' ) then
     foreach program ( smkinven spcmat elevpoint grdmat laypoint mrgelev temporal smkmerge smk2emis)
-         set point_file = "./tmp/${program}.$SRCABBR.$$"
+         set tmp_file = "./tmp/${program}.$SRCABBR.$$"
          set logfile = "${program}_${SRCABBR}_*.log"
-         grep 'Normal Completion' $LOGS/$SRCABBR/$logfile >> ${point_file}
-         set id = `grep -c 'Normal Completion' ${point_file}`
+         set reportfile = "report.$SRCABBR.${G_STDATE}_stdate.$$.log"
+         grep 'Normal Completion' $LOGS/$SRCABBR/$logfile >> ${tmp_file}
+         set id = `grep -c 'Normal Completion' ${tmp_file}`
          if ( $id >= 1 ) then
-           echo "$program $array[1] `grep -c 'Normal Completion' $point_file` times"
-           echo 'File name and location at time' ${program} 'was run - NOTE: Directory Location may have been moved after run completed' >> $point_file
-            ls -lrt $LOGS/$SRCABBR/$logfile >> $point_file
-           grep -A 1 OPEN $LOGS/$SRCABBR/$logfile >> $point_file
-           grep -A 1 'opened as NEW' $LOGS/$SRCABBR/$logfile >> $point_file
-           grep -A 1 'opened as UNKNOWN' $LOGS/$SRCABBR/$logfile >> $point_file
-           grep -A 1 'opened as OLD' $LOGS/$SRCABBR/$logfile >> $point_file
-           grep -A 1 -i 'opened for input' $LOGS/$SRCABBR/$logfile >> $point_file
-           grep -A 1 -i 'opened for output' $LOGS/$SRCABBR/$logfile >> $point_file
+           echo "=========================================" |& tee -a $reportfile
+           echo "$program $array[1] `grep -c 'Normal Completion' $tmp_file` times" |& tee -a $reportfile
+           echo "=========================================" |& tee -a $reportfile
+           echo 'File name and location at time' ${program} 'was run - NOTE: Directory Location may have been moved after run completed' >> $reportfile
+            ls -lrt $LOGS/$SRCABBR/$logfile >> $reportfile
+           grep -A 1 OPEN $LOGS/$SRCABBR/$logfile >> $reportfile
+           grep -A 1 'opened as NEW' $LOGS/$SRCABBR/$logfile >> $reportfile
+           grep -A 1 'opened as UNKNOWN' $LOGS/$SRCABBR/$logfile >> $reportfile
+           grep -A 1 'opened as OLD' $LOGS/$SRCABBR/$logfile >> $reportfile
+           grep -A 1 -i 'opened for input' $LOGS/$SRCABBR/$logfile >> $reportfile
+           grep -A 1 -i 'opened for output' $LOGS/$SRCABBR/$logfile >> $reportfile
          else if ($id == 0) then
            grep -B 4 -A 2 'ERROR ABORT in subroutine' $LOGS/$SRCABBR/$logfile
          echo "========================================="
@@ -237,8 +245,10 @@ while ( $done == 0 )
 
          echo "========================================="
     end
-         echo "Log File Names and Date Stamps"
-       ls -l $LOGS/$SRCABBR/*_${SRCABBR}_*.log
+          echo "=========================================" |& tee -a $reportfile
+         echo "Log File Names and Date Stamps" |& tee -a $reportfile
+           echo "=========================================" |& tee -a $reportfile
+       ls -l $LOGS/$SRCABBR/*_${SRCABBR}_*.log |& tee -a $reportfile
        set mergelogdate = `stat -c%Y $LOGS/$SRCABBR/smkmerge_${SRCABBR}_*${G_STDATE}_$GRID*.log`
        echo 'mergelogdate ='$mergelogdate
        set invlogdate   = `stat -c%Y $LOGS/$SRCABBR/smkinven_${SRCABBR}_*.log`

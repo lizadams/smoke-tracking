@@ -9,7 +9,9 @@
 setenv SRCABBR  point      # abbreviation for naming log and output files
 setenv SMK_HOME  /netscr/lizadams/SMOKEv40
 setenv SMK_SOURCE   P         # source category to process
-setenv G_STDATE 2012186
+setenv INV_TYP P
+source $ASSIGNS/ASSIGNS.CARB_base2012.cmaq.saprc
+
 
 # add smoketracking script
      $SMK_HOME/subsys/smoke/scripts/run/smoke-tracking/smoketracking status $SMK_SOURCE
