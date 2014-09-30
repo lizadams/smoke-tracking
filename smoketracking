@@ -19,7 +19,7 @@
      exit
    endif
 
-set log_analyzer = `python ./smoke-tracking/log_analyzer/log_analyzer.py -k ./smoke-tracking/log_analyzer/known_messages.txt -l 2 -f test_log4.csv $LOGS/$SRCABBR/*_${SRCABBR}_*log`
+set log_analyzer = `python ./log_analyzer/log_analyzer.py -k ./log_analyzer/known_messages.txt -l 2 -f test_log4.csv $LOGS/$SRCABBR/*_${SRCABBR}_*log`
 
 set done = 0
 set prefix_byte_count = 0
@@ -41,14 +41,14 @@ while ( $done == 0 )
   if ( "$input[1]" == 'status' ) then
     #  create a temporary directory to store files containing grep output
        mkdir -p ./tmp
+  endif
 
     set array = (Success Failure)
     if ( "$input[2]" == 'A' ) then
     foreach program ( smkinven spcmat grdmat temporal smkmerge ) 
-#smk2emis
          set tmp_file = "./tmp/${program}.$SRCABBR.$$"
          set logfile = "${program}_${SRCABBR}_*.log"
-         set reportfile = "report.$SRCABBR.${G_STDATE}_stdate.$$.log"
+         set reportfile = "report.$SRCABBR.$program.$GRID.$ASCEN.$$.rpt"
          grep 'Normal Completion' $LOGS/$SRCABBR/$logfile >> $tmp_file 
          echo "========================================="
          set id = `grep -c 'Normal Completion' $tmp_file`
@@ -56,56 +56,48 @@ while ( $done == 0 )
            echo "=========================================" |& tee -a $reportfile
            echo "$program $array[1] `grep -c 'Normal Completion' $tmp_file` times" |& tee -a $reportfile
            echo "=========================================" |& tee -a $reportfile 
-           echo ${SRCABBR} "REPORT: " >> $reportfile
+           echo ${GRID} $ASCEN $SRCABBR "REPORT: " >> $reportfile
            echo 'File name and location at time' ${program} 'was run - NOTE: Directory Location may have been moved after run completed' >> $reportfile
          # note >> appends to the end of the file
-           ls -lrt $LOGS/$SRCABBR/$logfile >> $reportfile
+           ls $LOGS/$SRCABBR/$logfile >> $reportfile
            grep -A 1 OPEN $LOGS/$SRCABBR/$logfile >> $reportfile
            grep -A 1 'opened as NEW' $LOGS/$SRCABBR/$logfile >> $reportfile
            grep -A 1 'opened as UNKNOWN' $LOGS/$SRCABBR/$logfile >> $reportfile
-           grep -A 1 'opened as OLD' $LOGS/$SRCABBR/$logfile >> $reportfile
+           grep -A 1 'opened as OLD' $LOGS/$SRCABBR/$logfile | awk -f ' ' '$2 != TMP_POL_FILE' >> $reportfile
            grep -A 1 -i 'opened for input' $LOGS/$SRCABBR/$logfile >> $reportfile
            grep -A 1 -i 'opened for output' $LOGS/$SRCABBR/$logfile >> $reportfile
            grep 'Value for' $LOGS/$SRCABBR/$logfile >> $reportfile
-         else if ($id == 0) then
-        grep -B 4 -A 2 'ERROR ABORT in subroutine' $LOGS/$SRCABBR/$logfile
-         echo "========================================="
+           else if ($id == 0) then
+           grep -B 4 -A 2 'ERROR ABORT in subroutine' $LOGS/$SRCABBR/$logfile
+           echo "========================================="
            echo "${program} logfile unsuccessful: check and rerun program"
            echo "location of log file:"
-           ls -lrt $LOGS/$SRCABBR/$logfile
+           ls $LOGS/$SRCABBR/$logfile
            echo "----------------------------------"
            echo $log_analyzer
                 echo "more information is available from log_analyzer under ~/tmp/test.log4"
            break
 
          endif
-         echo "========================================="
      end
-           echo "=========================================" |& tee -a $reportfile
-         echo "Log File Names and Date Stamps" |& tee -a $reportfile 
-           echo "=========================================" |& tee -a $reportfile
-       ls -lrt $LOGS/$SRCABBR/*_${SRCABBR}_*.log |& tee -a $reportfile
-       set mergelogdate = `stat -c%Y $LOGS/$SRCABBR/smkmerge_${SRCABBR}_*${G_STDATE}_${GRID}*.log`
-       echo 'mergelogdate ='$mergelogdate
-       set invlogdate   = `stat -c%Y $LOGS/$SRCABBR/smkinven_${SRCABBR}_*.log`
-       echo 'invlogdate =' $invlogdate
-       set spcmatcmaqdate   = `stat -c%Y $LOGS/$SRCABBR/spcmat_${SRCABBR}_*cmaq*.log`
-       echo 'spcmatcmaqdate   =' $spcmatcmaqdate
-       set spcmatcamxdate = `stat -c%Y $LOGS/$SRCABBR/spcmat_${SRCABBR}_*camx*.log`
-       echo 'spcmatcamxdate =' $spcmatcamxdate
-       set grdmatdate   = `stat -c%Y $LOGS/$SRCABBR/grdmat_${SRCABBR}_*$GRID*.log`
-       echo 'grdmatdate = '$grdmatdate
-       set temporaldate = `stat -c%Y $LOGS/$SRCABBR/temporal_${SRCABBR}_*.log`
-       echo 'temporaldate =' $temporaldate
-       set smk2emisdate = `stat -c%Y $LOGS/$SRCABBR/smk2emis_${SRCABBR}_*$GRID*.log`
-       echo 'smk2emisdate =' $smk2emisdate
+           echo "=========================================" >> $reportfile
+           echo "Log File Names and Date Stamps" >> $reportfile 
+           echo "=========================================" >> $reportfile
+       ls $LOGS/$SRCABBR/*_${SRCABBR}_*.log >> $reportfile
+#        echo '$SRCABBR=' $SRCABBR 
+         set invlogdate   = `stat -c%Y $LOGS/$SRCABBR/smkinven_${SRCABBR}_*.log`
+         set spcmatcmaqdate   = `stat -c%Y $LOGS/$SRCABBR/spcmat_${SRCABBR}_*cmaq*.log`
+         set spcmatcamxdate = `stat -c%Y $LOGS/$SRCABBR/spcmat_${SRCABBR}_*camx*.log`
+         set grdmatdate   = `stat -c%Y $LOGS/$SRCABBR/grdmat_${SRCABBR}_*$GRID*.log`
+         set temporaldate = `stat -c%Y $LOGS/$SRCABBR/temporal_${SRCABBR}_*.log`
+#        set smk2emisdate = `stat -c%Y $LOGS/$SRCABBR/smk2emis_${SRCABBR}_*$GRID*.log`
 
        set filedate = $invlogdate
 #       echo 'filedate = '$invlogdate
                   echo "============================="
-                   echo "checking if smkinven was run prior to other programs"
+                  echo "checking if smkinven was run prior to other programs"
                   echo "=============================="
-        foreach program ( smkinven spcmat grdmat temporal smk2emis smkmerge )
+        foreach program ( smkinven spcmat grdmat temporal smkmerge )
            if ($program == smkinven) then
               set logdate = $invlogdate
            else if ($program == spcmat) then
@@ -115,9 +107,17 @@ while ( $done == 0 )
            else if ($program == temporal) then
               set logdate = $temporaldate
            else if ($program == smkmerge) then
+                  echo "============================="
+                  echo "if there is more than one smkkmerge log file, then the last one will be used to check the logfile time"
+                  echo "=============================="
+
+           foreach file (`ls $LOGS/$SRCABBR/smkmerge_${SRCABBR}_*.log` )
+              set mergedate = `ls $file | awk -F _ '{print $7}'`
+              set mergelogdate = `stat -c%Y $LOGS/$SRCABBR/smkmerge_${SRCABBR}_*${mergedate}_${GRID}*.log`
               set logdate = $mergelogdate
-           else if ($program == smk2emis) then
-              set logdate = $smk2emisdate
+           end
+#           else if ($program == smk2emis) then
+#              set logdate = $smk2emisdate
            endif
            if ($logdate >= $invlogdate) then
                     if ($program == smkinven) then
@@ -141,8 +141,8 @@ while ( $done == 0 )
                  echo "The logfile for grdmat is NEWER than $program. You may need to rerun temporal, if an ERROR was reported above"
                else if ($program == smkmerge) then
                  echo "The logfile for temporal is NEWER than $program. You may need to rerun smkmerge"
-               else if ($program == smk2emis) then
-                 echo "The logfile for temporal is NEWER than $program. You may need to rerun smk2emis"
+#               else if ($program == smk2emis) then
+#                 echo "The logfile for temporal is NEWER than $program. You may need to rerun smk2emis"
                endif
            endif
               set filedate = $logdate
@@ -151,7 +151,7 @@ while ( $done == 0 )
                  echo "============================="
                    echo "checking if smkmerge was run after all other programs"
                   echo "=============================="
-       foreach program ( smkinven spcmat grdmat temporal smk2emis smkmerge )
+       foreach program ( smkinven spcmat grdmat temporal smkmerge )
          if ($program == smkinven) then
               set nlogdate = $invlogdate
            else if ($program == spcmat) then
@@ -162,8 +162,8 @@ while ( $done == 0 )
               set nlogdate = $temporaldate
            else if ($program == smkmerge) then
               set nlogdate = $mergelogdate
-           else if ($program == smk2emis) then
-              set nlogdate = $smk2emisdate
+#           else if ($program == smk2emis) then
+#              set nlogdate = $smk2emisdate
            endif
            if ($nlogdate <= $mergelogdate) then
                     if ($program == smkmerge) then
@@ -173,8 +173,8 @@ while ( $done == 0 )
                        echo "smkmerge was run after $program"
                     else if ($program == temporal) then
                        echo "smkmerge was run after $program"
-                    else if ($program == smk2emis) then
-                       echo "smkmerge was run after $program"
+#                    else if ($program == smk2emis) then
+#                       echo "smkmerge was run after $program"
                   endif
            else
                echo "========================================"
@@ -203,17 +203,18 @@ while ( $done == 0 )
        end
           if ( $maxtmp == $mergelogdate ) then
               echo "$array[1] in the order of runs: Smkmerge was correctly run after all processes"
-          else if ( $maxtmp == $smk2emisdate ) then
-              echo "$array[1] in the order of runs: Smkmerge was correctly run after all processes except smk2emis"
-          else if ( $maxtmp != $smk2emisdate ) then
-               echo "SMKMERGE may need to be rerun, it's log file must be run after all other processes except smk2emis"
+#          else if ( $maxtmp == $smk2emisdate ) then
+#              echo "$array[1] in the order of runs: Smkmerge was correctly run after all processes except smk2emis"
+#          else if ( $maxtmp != $smk2emisdate ) then
+#               echo "SMKMERGE may need to be rerun, it's log file must be run after all other processes except smk2emis"
           endif
 
-              echo 'note: spcmat, grdmat and temporal can be run independently, as long as they are run after smkinven and prior to smkmerge'
+         echo 'note: spcmat, grdmat and temporal can be run independently, but after smkinven and before smkmerge'
 #          rm ./tmp/*${SRCABBR}*
 
     else if ( "$input[2]" == 'P' ) then
-    foreach program ( smkinven spcmat elevpoint grdmat laypoint mrgelev temporal smkmerge smk2emis)
+    echo 'in Point source'
+    foreach program ( smkinven spcmat elevpoint grdmat laypoint mrgelev temporal smkmerge )
          set tmp_file = "./tmp/${program}.$SRCABBR.$$"
          set logfile = "${program}_${SRCABBR}_*.log"
          set reportfile = "report.$SRCABBR.${G_STDATE}_stdate.$$.log"
@@ -224,7 +225,7 @@ while ( $done == 0 )
            echo "$program $array[1] `grep -c 'Normal Completion' $tmp_file` times" |& tee -a $reportfile
            echo "=========================================" |& tee -a $reportfile
            echo 'File name and location at time' ${program} 'was run - NOTE: Directory Location may have been moved after run completed' >> $reportfile
-            ls -lrt $LOGS/$SRCABBR/$logfile >> $reportfile
+            ls $LOGS/$SRCABBR/$logfile >> $reportfile
            grep -A 1 OPEN $LOGS/$SRCABBR/$logfile >> $reportfile
            grep -A 1 'opened as NEW' $LOGS/$SRCABBR/$logfile >> $reportfile
            grep -A 1 'opened as UNKNOWN' $LOGS/$SRCABBR/$logfile >> $reportfile
@@ -236,7 +237,7 @@ while ( $done == 0 )
          echo "========================================="
            echo "${program} logfile unsuccessful: check and rerun program"
            echo "location of log file:"
-           ls -lrt $LOGS/$SRCABBR/$logfile
+           ls $LOGS/$SRCABBR/$logfile
            echo "----------------------------------"
            echo $log_analyzer
                 echo "more information is available from log_analyzer under ~/tmp/test.log4"
@@ -245,30 +246,20 @@ while ( $done == 0 )
 
          echo "========================================="
     end
-          echo "=========================================" |& tee -a $reportfile
-         echo "Log File Names and Date Stamps" |& tee -a $reportfile
-           echo "=========================================" |& tee -a $reportfile
-       ls -l $LOGS/$SRCABBR/*_${SRCABBR}_*.log |& tee -a $reportfile
+          echo "=========================================" >> $reportfile
+         echo "Log File Names and Date Stamps" >> $reportfile
+           echo "=========================================" >> $reportfile
+       ls -l $LOGS/$SRCABBR/*_${SRCABBR}_*.log >> $reportfile
        set mergelogdate = `stat -c%Y $LOGS/$SRCABBR/smkmerge_${SRCABBR}_*${G_STDATE}_$GRID*.log`
-       echo 'mergelogdate ='$mergelogdate
        set invlogdate   = `stat -c%Y $LOGS/$SRCABBR/smkinven_${SRCABBR}_*.log`
-       echo 'invlogdate =' $invlogdate
-      set spcmatcmaqdate   = `stat -c%Y $LOGS/$SRCABBR/spcmat_${SRCABBR}_*cmaq*.log`
-       echo 'spcmatcmaqdate   =' $spcmatcmaqdate
+       set spcmatcmaqdate   = `stat -c%Y $LOGS/$SRCABBR/spcmat_${SRCABBR}_*cmaq*.log`
        set spcmatcamxdate = `stat -c%Y $LOGS/$SRCABBR/spcmat_${SRCABBR}_*camx*.log`
-       echo 'spcmatcamxdate =' $spcmatcamxdate
        set elevpointdate   = `stat -c%Y $LOGS/$SRCABBR/elevpoint_${SRCABBR}_*.log`
-       echo 'elevpointdate =' $elevpointdate
        set mrgelevdate   = `stat -c%Y $LOGS/$SRCABBR/mrgelev_${SRCABBR}_*$GRID*.log`
-       echo 'mrgelevdate =' $mrgelevdate
        set grdmatdate   = `stat -c%Y $LOGS/$SRCABBR/grdmat_${SRCABBR}_*$GRID*.log`
-       echo 'grdmatdate =' $grdmatdate
        set laypointdate   = `stat -c%Y $LOGS/$SRCABBR/laypoint_${SRCABBR}_*$GRID*.log`
-       echo 'laypointdate =' $grdmatdate
        set temporaldate = `stat -c%Y $LOGS/$SRCABBR/temporal_${SRCABBR}_*.log`
-       echo 'temporaldate =' $temporaldate
        set smk2emisdate = `stat -c%Y $LOGS/$SRCABBR/smk2emis_${SRCABBR}_*$GRID*.log`
-       echo 'smk2emisdate =' $smk2emisdate
        set filedate = $invlogdate
                  echo "============================="
                    echo "checking if smkinven was run prior to other programs"
@@ -334,7 +325,7 @@ while ( $done == 0 )
               set logdate = $temporaldate
            else if ($program == smkmerge) then
               set logdate = $mergelogdate
-           endif
+         endif
            if ($logdate <= $mergelogdate) then
                     if ($program == smkmerge) then
                     else if ($program == spcmat) then
@@ -382,59 +373,57 @@ while ( $done == 0 )
               echo 'note: spcmat, grdmat and temporal can be run independently, as long as they are run after smkinven and prior to smkmerge'
 #          rm ./tmp/*_${SRCABBR}_*
     else if ( "$input[2]" == 'B' ) then
-    foreach program ( tmpbeis3 normbeis3 smk2emis smkmerge )
-         set biogenic_file = "./tmp/${program}_$SRCABBR.$$"
-         set logfile = "${program}_${SRCABBR}_*.log"
-         grep 'Normal Completion' $LOGS/$logfile >> $biogenic_file
-         echo "$program $array[1] `grep -c 'Normal Completion' $biogenic_file` times"
-         echo 'File name and location at time' ${program} 'was run - NOTE: Directory Location may have been moved after run completed' >> $biogenic_file
-            ls -lrt $LOGS/$SRCABBR/$logfile >> $biogenic_file
-           grep -A 1 OPEN $LOGS/$SRCABBR/$logfile >> $biogenic_file
-           grep -A 1 'opened as NEW' $LOGS/$SRCABBR/$logfile >> $biogenic_file
-           grep -A 1 'opened as UNKNOWN' $LOGS/$SRCABBR/$logfile >> $biogenic_file
-           grep -A 1 'opened as OLD' $LOGS/$SRCABBR/$logfile >> $biogenic_file
-           grep -A 1 -i 'opened for input' $LOGS/$SRCABBR/$logfile >> $biogenic_file
-           grep -A 1 -i 'opened for output' $LOGS/$SRCABBR/$logfile >> $biogenic_file
+         foreach program ( tmpbeis3 normbeis3 smkmerge )
+            echo 'in Biogenic source' 
+            set tmp_file = "./tmp/${program}_$SRCABBR.$$"
+            set reportfile = "report.$SRCABBR.$program.$GRID.$ASCEN.$$.rpt"
+            set logfile = "${program}_${SRCABBR}_*.log"
+            grep 'Normal Completion' $LOGS/$logfile >> $biogenic_file
+            echo "$program $array[1] `grep -c 'Normal Completion' $biogenic_file` times"
+         if ( $id >= 1 ) then
+           echo "=========================================" |& tee -a $reportfile
+           echo "$program $array[1] `grep -c 'Normal Completion' $tmp_file` times" |& tee -a $reportfile
+           echo "=========================================" |& tee -a $reportfile
+           echo 'File name and location at time' ${program} 'was run - NOTE: Directory Location may have been moved after run completed' >> $reportfile
+            ls $LOGS/$SRCABBR/$logfile >> $reportfile
+           grep -A 1 OPEN $LOGS/$SRCABBR/$logfile >> $reportfile
+           grep -A 1 'opened as NEW' $LOGS/$SRCABBR/$logfile >> $reportfile
+           grep -A 1 'opened as UNKNOWN' $LOGS/$SRCABBR/$logfile >> $reportfile
+           grep -A 1 'opened as OLD' $LOGS/$SRCABBR/$logfile >> $reportfile
+           grep -A 1 -i 'opened for input' $LOGS/$SRCABBR/$logfile >> $reportfile
+           grep -A 1 -i 'opened for output' $LOGS/$SRCABBR/$logfile >> $reportfile
          else if ($id == 0) then
            grep -B 4 -A 2 'ERROR ABORT in subroutine' $LOGS/$SRCABBR/$logfile
          echo "========================================="
            echo "${program} logfile unsuccessful: check and rerun program"
            echo "location of log file:"
-           ls -lrt $LOGS/$SRCABBR/$logfile
+           ls $LOGS/$SRCABBR/$logfile
            echo "----------------------------------"
            echo $log_analyzer
                 echo "more information is available from log_analyzer under ~/tmp/test.log4"
            break
          endif
-
          echo "========================================="
-
-    end
-       echo "Log File Names and Date Stamps"
-       ls -l $LOGS/$SRCABBR/*_${SRCABBR}_*.log
+       echo "Log File Names and Date Stamps" >> $reportfile
+       ls -l $LOGS/$SRCABBR/*_${SRCABBR}_*.log >> $reportfile
        set mergelogdate = `stat -c%Y $LOGS/$SRCABBR/smkmerge_$SRCABBR*.log`
-       echo 'mergelogdate ='$mergelogdate
        set invlogdate   = `stat -c%Y $LOGS/$SRCABBR/smkinven_${SRCABBR}_*.log`
-       echo 'invlogdate =' $invlogdate
        set tmpbeis3date   = `stat -c%Y $LOGS/$SRCABBR/tmpbeis3_$SRCABBR*.log`
-       echo 'tmpbeis3date ='$tmpbeis3date
        set normbeis3date   = `stat -c%Y $LOGS/$SRCABBR/normbeis3_$SRCABBR*.log`
-       echo 'normbeis3date ='$normbeis3date
-       set smk2emisdate = `stat -c%Y $LOGS/$SRCABBR/smk2emis_$SRCABBR*.log`
-       echo 'smk2emisdate ='$smk2emisdate
+#       set smk2emisdate = `stat -c%Y $LOGS/$SRCABBR/smk2emis_$SRCABBR*.log`
        set filedate = $invlogdate
                 echo "============================="
                    echo "checking if smkinven was run prior to other programs"
                   echo "=============================="
-       foreach program ( smkinven tmpbeis3 normbeis3 smk2emis smkmerge )
+       foreach program ( smkinven tmpbeis3 normbeis3 smkmerge )
            if ($program == smkinven) then
               set logdate = $invlogdate
            else if ($program == tmpbeis3) then
               set logdate = $tmpbeis3date
            else if ($program == normbeis3) then
               set logdate = $normbeis3date
-           else if ($program == smk2emis) then
-              set logdate = $smk2emisdate
+#           else if ($program == smk2emis) then
+#              set logdate = $smk2emisdate
            else if ($program == smkmerge) then
               set logdate = $mergelogdate
            endif
@@ -444,8 +433,8 @@ while ( $done == 0 )
                    echo "$program was run after smkinven"
                else if ($program == normbeis3) then
                    echo "$program was run after smkinven"
-               else if ($program == smk2emis) then
-                   echo "$program was run after smkinven"
+#               else if ($program == smk2emis) then
+#                   echo "$program was run after smkinven"
                else if ($program == smkmerge) then
                    echo "$program was run after smkinven"
                endif
@@ -457,14 +446,15 @@ while ( $done == 0 )
                  echo "The logfile for smkinven is NEWER than $program. You need to rerun $program"
                else if ($program == smkmerge) then
                  echo "The logfile for smkinven is NEWER than $program. You need to rerun $program"
-               else if ($program == smk2emis) then
-                 echo "The logfile for smkinven is NEWER than $program. You need to rerun $program"
+#               else if ($program == smk2emis) then
+#                 echo "The logfile for smkinven is NEWER than $program. You need to rerun $program"
                endif
            endif
        end
 
        set maxtmp = 0
-       foreach logdate ( $mergelogdate $tmpbeis3date $normbeis3date $smk2emisdate )
+       foreach logdate ( $mergelogdate $tmpbeis3date $normbeis3date )
+#$smk2emisdate
            if ($logdate >= $maxtmp) then
                set maxtmp = $logdate
            else
@@ -472,10 +462,10 @@ while ( $done == 0 )
        end
           if ( $maxtmp == $mergelogdate ) then
               echo "$array[1] in the order of runs: Smkmerge was correctly run after all processes"
-          else if ( $maxtmp == $smk2emisdate ) then
-              echo "$array[1] in the order of runs: Smkmerge was correctly run after all processes except smk2emis"
-          else if ( $maxtmp != $smk2emisdate ) then
-               echo "SMKMERGE may need to be rerun, it's log file must be run after all other processes except smk2emis"
+#          else if ( $maxtmp == $smk2emisdate ) then
+#              echo "$array[1] in the order of runs: Smkmerge was correctly run after all processes except smk2emis"
+#          else if ( $maxtmp != $smk2emisdate ) then
+#               echo "SMKMERGE may need to be rerun, it's log file must be run after all other processes except smk2emis"
           endif
 
 
@@ -502,10 +492,10 @@ while ( $done == 0 )
        end
           if ( $maxtmp == $mergelogdate ) then
               echo "$array[1] in the order of runs: Smkmerge was correctly run after all processes"
-          else if ( $maxtmp == $smk2emisdate ) then
-              echo "$array[1] in the order of runs: Smkmerge was correctly run after all processes except smk2emis"
-          else if ( $maxtmp != $smk2emisdate ) then
-               echo "SMKMERGE may need to be rerun, it's log file must be run after all other processes except smk2emis"
+#          else if ( $maxtmp == $smk2emisdate ) then
+#              echo "$array[1] in the order of runs: Smkmerge was correctly run after all processes except smk2emis"
+#          else if ( $maxtmp != $smk2emisdate ) then
+#               echo "SMKMERGE may need to be rerun, it's log file must be run after all other processes except smk2emis"
           endif
 
 
