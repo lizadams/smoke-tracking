@@ -19,7 +19,7 @@
      exit
    endif
 
-#set log_analyzer = `python smoke_tracking/log_analyzer/log_analyzer.py -k /cmas/smoke/smoke_tracking/log_analyzer/known_messages.txt -l 2 -f ~/tmp/test_log4.csv $LOGS/$SRCABBR/*_${SRCABBR}_*log`
+set log_analyzer = `python ./smoke-tracking/log_analyzer/log_analyzer.py -k ./smoke-tracking/log_analyzer/known_messages.txt -l 2 -f test_log4.csv $LOGS/$SRCABBR/*_${SRCABBR}_*log`
 
 set done = 0
 set prefix_byte_count = 0
@@ -46,21 +46,24 @@ while ( $done == 0 )
     if ( "$input[2]" == 'A' ) then
     foreach program ( smkinven spcmat grdmat temporal smkmerge ) 
 #smk2emis
-         set area_file = "./tmp/${program}.$SRCABBR.$$"
+         set tmp_file = "./tmp/${program}.$SRCABBR.$$"
          set logfile = "${program}_${SRCABBR}_*.log"
-         grep 'Normal Completion' $LOGS/$SRCABBR/$logfile >> $area_file
+         set reportfile = "report.$$"
+         grep 'Normal Completion' $LOGS/$SRCABBR/$logfile >> $tmp_file
          echo "========================================="
-         set id = `grep -c 'Normal Completion' $area_file`
+         set id = `grep -c 'Normal Completion' $tmp_file`
          if ( $id >= 1 ) then
-           echo "$program $array[1] `grep -c 'Normal Completion' $area_file` times"
-           echo 'File name and location at time' ${program} 'was run - NOTE: Directory Location may have been moved after run completed' >> $area_file
-            ls -lrt $LOGS/$SRCABBR/$logfile >> $area_file
-           grep -A 1 OPEN $LOGS/$SRCABBR/$logfile >> $area_file
-           grep -A 1 'opened as NEW' $LOGS/$SRCABBR/$logfile >> $area_file
-           grep -A 1 'opened as UNKNOWN' $LOGS/$SRCABBR/$logfile >> $area_file
-           grep -A 1 'opened as OLD' $LOGS/$SRCABBR/$logfile >> $area_file
-           grep -A 1 -i 'opened for input' $LOGS/$SRCABBR/$logfile >> $area_file
-           grep -A 1 -i 'opened for output' $LOGS/$SRCABBR/$logfile >> $area_file
+           echo "$program $array[1] `grep -c 'Normal Completion' $tmp_file` times"
+           echo 'File name and location at time' ${program} 'was run - NOTE: Directory Location may have been moved after run completed' >> $reportfile
+         # note >> appends to the file
+           ls -lrt $LOGS/$SRCABBR/$logfile >> $reportfile
+           grep -A 1 OPEN $LOGS/$SRCABBR/$logfile >> $reportfile
+           grep -A 1 'opened as NEW' $LOGS/$SRCABBR/$logfile >> $reportfile
+           grep -A 1 'opened as UNKNOWN' $LOGS/$SRCABBR/$logfile >> $reportfile
+           grep -A 1 'opened as OLD' $LOGS/$SRCABBR/$logfile >> $reportfile
+           grep -A 1 -i 'opened for input' $LOGS/$SRCABBR/$logfile >> $reportfile
+           grep -A 1 -i 'opened for output' $LOGS/$SRCABBR/$logfile >> $reportfile
+           grep 'Value for' $LOGS/$SRCABBR/$logfile >> $reportfile
          else if ($id == 0) then
         grep -B 4 -A 2 'ERROR ABORT in subroutine' $LOGS/$SRCABBR/$logfile
          echo "========================================="
@@ -370,15 +373,86 @@ while ( $done == 0 )
 #          rm ./tmp/*_${SRCABBR}_*
     else if ( "$input[2]" == 'B' ) then
     foreach program ( tmpbeis3 normbeis3 smk2emis smkmerge )
-         set biogenic_file = "./tmp/${program}.biogenic.$$"
-         grep 'Normal Completion' $LOGS/${program}.bg.*.log >> $biogenic_file
+         set biogenic_file = "./tmp/${program}_$SRCABBR.$$"
+         set logfile = "${program}_${SRCABBR}_*.log"
+         grep 'Normal Completion' $LOGS/$logfile >> $biogenic_file
          echo "$program $array[1] `grep -c 'Normal Completion' $biogenic_file` times"
+         echo 'File name and location at time' ${program} 'was run - NOTE: Directory Location may have been moved after run completed' >> $biogenic_file
+            ls -lrt $LOGS/$SRCABBR/$logfile >> $biogenic_file
+           grep -A 1 OPEN $LOGS/$SRCABBR/$logfile >> $biogenic_file
+           grep -A 1 'opened as NEW' $LOGS/$SRCABBR/$logfile >> $biogenic_file
+           grep -A 1 'opened as UNKNOWN' $LOGS/$SRCABBR/$logfile >> $biogenic_file
+           grep -A 1 'opened as OLD' $LOGS/$SRCABBR/$logfile >> $biogenic_file
+           grep -A 1 -i 'opened for input' $LOGS/$SRCABBR/$logfile >> $biogenic_file
+           grep -A 1 -i 'opened for output' $LOGS/$SRCABBR/$logfile >> $biogenic_file
+         else if ($id == 0) then
+           grep -B 4 -A 2 'ERROR ABORT in subroutine' $LOGS/$SRCABBR/$logfile
+         echo "========================================="
+           echo "${program} logfile unsuccessful: check and rerun program"
+           echo "location of log file:"
+           ls -lrt $LOGS/$SRCABBR/$logfile
+           echo "----------------------------------"
+           echo $log_analyzer
+                echo "more information is available from log_analyzer under ~/tmp/test.log4"
+           break
+         endif
+
+         echo "========================================="
+
     end
-       ls -l $LOGS/*.bg*.log
-       set mergelogdate = `stat -c%Y $LOGS/smkmerge*bg*.log`
-       set tmpbeis3date   = `stat -c%Y $LOGS/tmpbeis3*bg*.log`
-       set normbeis3date   = `stat -c%Y $LOGS/normbeis3*bg*.log`
-       set smk2emisdate = `stat -c%Y $LOGS/smk2emis*bg*.log`
+       echo "Log File Names and Date Stamps"
+       ls -l $LOGS/$SRCABBR/*_${SRCABBR}_*.log
+       set mergelogdate = `stat -c%Y $LOGS/$SRCABBR/smkmerge_$SRCABBR*.log`
+       echo 'mergelogdate ='$mergelogdate
+       set invlogdate   = `stat -c%Y $LOGS/$SRCABBR/smkinven_${SRCABBR}_*.log`
+       echo 'invlogdate =' $invlogdate
+       set tmpbeis3date   = `stat -c%Y $LOGS/$SRCABBR/tmpbeis3_$SRCABBR*.log`
+       echo 'tmpbeis3date ='$tmpbeis3date
+       set normbeis3date   = `stat -c%Y $LOGS/$SRCABBR/normbeis3_$SRCABBR*.log`
+       echo 'normbeis3date ='$normbeis3date
+       set smk2emisdate = `stat -c%Y $LOGS/$SRCABBR/smk2emis_$SRCABBR*.log`
+       echo 'smk2emisdate ='$smk2emisdate
+       set filedate = $invlogdate
+                echo "============================="
+                   echo "checking if smkinven was run prior to other programs"
+                  echo "=============================="
+       foreach program ( smkinven tmpbeis3 normbeis3 smk2emis smkmerge )
+           if ($program == smkinven) then
+              set logdate = $invlogdate
+           else if ($program == tmpbeis3) then
+              set logdate = $tmpbeis3date
+           else if ($program == normbeis3) then
+              set logdate = $normbeis3date
+           else if ($program == smk2emis) then
+              set logdate = $smk2emisdate
+           else if ($program == smkmerge) then
+              set logdate = $mergelogdate
+           endif
+           if ($logdate >= $invlogdate) then
+              set filedate = $logdate
+               if ($program == tmpbeis3) then
+                   echo "$program was run after smkinven"
+               else if ($program == normbeis3) then
+                   echo "$program was run after smkinven"
+               else if ($program == smk2emis) then
+                   echo "$program was run after smkinven"
+               else if ($program == smkmerge) then
+                   echo "$program was run after smkinven"
+               endif
+           else
+               if ($program == smkinven) then
+               else if ($program == tmpbeis3) then
+                 echo "The logfile for smkinven is NEWER than $program. You need to rerun programs after smkinven"
+               else if ($program == normbeis3) then
+                 echo "The logfile for smkinven is NEWER than $program. You need to rerun $program"
+               else if ($program == smkmerge) then
+                 echo "The logfile for smkinven is NEWER than $program. You need to rerun $program"
+               else if ($program == smk2emis) then
+                 echo "The logfile for smkinven is NEWER than $program. You need to rerun $program"
+               endif
+           endif
+       end
+
        set maxtmp = 0
        foreach logdate ( $mergelogdate $tmpbeis3date $normbeis3date $smk2emisdate )
            if ($logdate >= $maxtmp) then
@@ -395,7 +469,7 @@ while ( $done == 0 )
           endif
 
 
-    else if ( "$input[2]" == 'mobile' ) then
+    else if ( "$input[2]" == 'M' ) then
     foreach program ( smkinven grdmat smkmerge )
          set mobile_file = "./tmp/${program}.mobile.$$"
          grep 'Normal Completion' $LOGS/${program}.mb.*.log >> $mobile_file
