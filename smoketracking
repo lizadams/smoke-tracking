@@ -18,8 +18,8 @@
      echo 'please set 'SMK_HOME' environment variable and source assigns file'
      exit
    endif
-
-set log_analyzer = `python ./log_analyzer/log_analyzer.py -k ./log_analyzer/known_messages.txt -l 2 -f test_log4.csv $LOGS/$SRCABBR/*_${SRCABBR}_*log`
+   setenv ldir $SMK_HOME/subsys/smoke/scripts/run/smoke-tracking/log_analyzer
+set log_analyzer = `python $ldir/log_analyzer.py -k $ldir/known_messages.txt -l 2 -f $ldir/test_log4.csv $LOGS/$SRCABBR/*_${SRCABBR}_*log`
 
 set done = 0
 set prefix_byte_count = 0
