@@ -8,3 +8,12 @@ smoketracking - a C Shell program that invokes the log_analyzer program.
 
 This script should be run after you have completed the SMOKE runs for each sector.
 
+To put code up on github.
+https://github.com/lizadams/smoke-tracking
+
+git status
+git add
+git commit
+git push
+
+
