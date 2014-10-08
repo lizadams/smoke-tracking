@@ -75,7 +75,7 @@ while ( $done == 0 )
            ls $LOGS/$SRCABBR/$logfile
            echo "----------------------------------"
            echo $log_analyzer
-                echo "more information is available from log_analyzer under ~/tmp/test.log4"
+                echo "more information is available from log_analyzer under ./tmp/test.log4"
            break
 
          endif
@@ -84,8 +84,10 @@ while ( $done == 0 )
            echo "Log File Names and Date Stamps" >> $reportfile 
            echo "=========================================" >> $reportfile
        ls $LOGS/$SRCABBR/*_${SRCABBR}_*.log >> $reportfile
-#        echo '$SRCABBR=' $SRCABBR 
-         set invlogdate   = `stat -c%Y $LOGS/$SRCABBR/smkinven_${SRCABBR}_*.log`
+         echo '$SRCABBR=' $SRCABBR 
+         echo '$LOGS='$LOGS
+         echo 'log=' ${LOGS}/${SRCABBR}/smkinven*.log
+         set invlogdate   = `stat -c%Y $LOGS/$SRCABBR/smkinven*.log`
          set spcmatcmaqdate   = `stat -c%Y $LOGS/$SRCABBR/spcmat_${SRCABBR}_*cmaq*.log`
          set spcmatcamxdate = `stat -c%Y $LOGS/$SRCABBR/spcmat_${SRCABBR}_*camx*.log`
          set grdmatdate   = `stat -c%Y $LOGS/$SRCABBR/grdmat_${SRCABBR}_*$GRID*.log`
@@ -229,7 +231,7 @@ while ( $done == 0 )
            grep -A 1 OPEN $LOGS/$SRCABBR/$logfile >> $reportfile
            grep -A 1 'opened as NEW' $LOGS/$SRCABBR/$logfile >> $reportfile
            grep -A 1 'opened as UNKNOWN' $LOGS/$SRCABBR/$logfile >> $reportfile
-           grep -A 1 'opened as OLD' $LOGS/$SRCABBR/$logfile >> $reportfile
+           grep -A 1 'opened as OLD' $LOGS/$SRCABBR/$logfile | grep -v TMP >> $reportfile
            grep -A 1 -i 'opened for input' $LOGS/$SRCABBR/$logfile >> $reportfile
            grep -A 1 -i 'opened for output' $LOGS/$SRCABBR/$logfile >> $reportfile
          else if ($id == 0) then
@@ -240,7 +242,7 @@ while ( $done == 0 )
            ls $LOGS/$SRCABBR/$logfile
            echo "----------------------------------"
            echo $log_analyzer
-                echo "more information is available from log_analyzer under ~/tmp/test.log4"
+                echo "more information is available from log_analyzer under ./tmp/* files"
            break
          endif
 
@@ -249,7 +251,7 @@ while ( $done == 0 )
           echo "=========================================" >> $reportfile
          echo "Log File Names and Date Stamps" >> $reportfile
            echo "=========================================" >> $reportfile
-       ls -l $LOGS/$SRCABBR/*_${SRCABBR}_*.log >> $reportfile
+       ls $LOGS/$SRCABBR/*_${SRCABBR}_*.log >> $reportfile
        set mergelogdate = `stat -c%Y $LOGS/$SRCABBR/smkmerge_${SRCABBR}_*${G_STDATE}_$GRID*.log`
        set invlogdate   = `stat -c%Y $LOGS/$SRCABBR/smkinven_${SRCABBR}_*.log`
        set spcmatcmaqdate   = `stat -c%Y $LOGS/$SRCABBR/spcmat_${SRCABBR}_*cmaq*.log`
@@ -389,7 +391,7 @@ while ( $done == 0 )
            grep -A 1 OPEN $LOGS/$SRCABBR/$logfile >> $reportfile
            grep -A 1 'opened as NEW' $LOGS/$SRCABBR/$logfile >> $reportfile
            grep -A 1 'opened as UNKNOWN' $LOGS/$SRCABBR/$logfile >> $reportfile
-           grep -A 1 'opened as OLD' $LOGS/$SRCABBR/$logfile >> $reportfile
+           grep -A 1 'opened as OLD' $LOGS/$SRCABBR/$logfile | grep -v TMP >> $reportfile
            grep -A 1 -i 'opened for input' $LOGS/$SRCABBR/$logfile >> $reportfile
            grep -A 1 -i 'opened for output' $LOGS/$SRCABBR/$logfile >> $reportfile
          else if ($id == 0) then
@@ -400,12 +402,12 @@ while ( $done == 0 )
            ls $LOGS/$SRCABBR/$logfile
            echo "----------------------------------"
            echo $log_analyzer
-                echo "more information is available from log_analyzer under ~/tmp/test.log4"
+                echo "more information is available from log_analyzer under ./tmp/* files"
            break
          endif
          echo "========================================="
        echo "Log File Names and Date Stamps" >> $reportfile
-       ls -l $LOGS/$SRCABBR/*_${SRCABBR}_*.log >> $reportfile
+       ls $LOGS/$SRCABBR/*_${SRCABBR}_*.log >> $reportfile
        set mergelogdate = `stat -c%Y $LOGS/$SRCABBR/smkmerge_$SRCABBR*.log`
        set invlogdate   = `stat -c%Y $LOGS/$SRCABBR/smkinven_${SRCABBR}_*.log`
        set tmpbeis3date   = `stat -c%Y $LOGS/$SRCABBR/tmpbeis3_$SRCABBR*.log`
@@ -475,7 +477,7 @@ while ( $done == 0 )
          grep 'Normal Completion' $LOGS/${program}.mb.*.log >> $mobile_file
          echo "$program $array[1] `grep -c 'Normal Completion' $mobile_file` times"
     end
-       ls -l $LOGS/*.mb*.log 
+       ls $LOGS/*.mb*.log 
        set mergelogdate = `stat -c%Y $LOGS/smkmerge*mb*.log`
        set invlogdate   = `stat -c%Y $LOGS/smkinven*mb*.log`
        set spcmatdate   = `stat -c%Y $LOGS/spcmat*mb*.log`
@@ -509,7 +511,7 @@ while ( $done == 0 )
     else
       echo '../' > $temp_file
       /bin/ls -1Lp "$input[2]" >> $temp_file
-      /bin/ls -l   $temp_file | /usr/bin/awk '{ print $5 }'
+      /bin/ls  $temp_file | /usr/bin/awk '{ print $5 }'
       /bin/cat     $temp_file
       /bin/rm -f   $temp_file
     endif
