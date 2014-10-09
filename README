@@ -6,14 +6,32 @@ and the python script log_analyzer.
 
 smoketracking - a C Shell program that invokes the log_analyzer program.
 
-This script should be run after you have completed the SMOKE runs for each sector.
+This script should be run after you have completed the SMOKE runs for each sector using test_smoketracking_area.csh or test_smoketracking_point.csh or it is called during a run using the smoke_calls.csh script.
 
-To put code up on github.
+To set up the environment on killdevil use
+module load git   | loads the path to git within your environment
+Then go to the SMK_HOME directory
+setenv SMK_HOME /netscr/lizadams/SMOKEv40
+cd $SMK_HOME/subsys/smoke/assigns
+source ASSIGNS.CARB_base2012.cmaq.saprc
+cd /netscr/lizadams/SMOKEv40/subsys/smoke/scripts/run/smoke-tracking
+If the files have been removed from /netscr, they are available on /ms under:
+/ms/depts/cep/cep-emc/lizadams/SMOKE/SMOKEv40.smoketracker.tar.gz
+You probably need to update the smoketracker script if you use the archived version. 
+
+To obtain the code using git use the following commands.
+git clone https://github.com/lizadams/smoke-tracking.git
+
+If you want to make modifications to the code, use git fork and then submit a pull request to the owner of the repository.
+https://help.github.com/articles/fork-a-repo/ 
+
+To submit new changes to these files on the github smoke-tracking site - as author of the site (lizadams):
+
 https://github.com/lizadams/smoke-tracking
 
-git status
-git add
-git commit
-git push
-
+cd to the smoke-tracking directory and use the following commands:
+git status | check to see if your local branch is up to date with the origin/master
+git add    | add any files that are not staged for commit that need to be checked in
+git commit | commit files to the branch
+git push   | push files to github
 
